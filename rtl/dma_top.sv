@@ -85,11 +85,13 @@ module dma_top #(
     // ==========================================
     logic                  rm_req,
     logic [ADDR_WIDTH-1:0] rm_addr,
+    logic [ADDR_WIDTH-1:0] desc_addr_arb,
+    logic                  desc_fetch_arb,
     logic                  wm_req,
     logic [ADDR_WIDTH-1:0] wm_addr,
     logic [LEN_WIDTH-1:0]  master_len,
     logic [DATA_WIDTH-1:0] wm_data,
-    logic [2:0]            wm_strb,
+    //logic [3:0]            wm_strb,
     
     logic                  axi_read_done,
     logic                  axi_write_done,
@@ -137,9 +139,11 @@ module dma_top #(
     // ==========================================
     logic [ADDR_WIDTH-1:0]        int_src_addr;
     logic [ADDR_WIDTH-1:0]        int_dest_addr;
+    logic [ADDR_WIDTH-1:0]        int_desc_addr;
     logic [LEN_WIDTH-1:0]         int_transfer_len;
     logic                         int_start_read;
     logic                         int_start_write;
+    logic                         int_desc_fetch;
     
     logic                         int_read_done;
     logic                         int_write_done;
@@ -207,7 +211,7 @@ module dma_top #(
                 .dest_address    (fsm_dest_address[i]),
                 .desc_address    (fsm_desc_address[i]),
                 .len             (fsm_len[i]),
-                .type_in         (fsm_type_in[i]),
+                .desc_fetch      (fsm_type_in[i]),
                 
                 // Arbiter 1x1 Inputs (Responses to FSM)
                 .grant           (fsm_grant[i]),
@@ -262,9 +266,11 @@ module dma_top #(
 
         .src_address_o   (int_src_addr),
         .dest_address_o  (int_dest_addr),
+        .desc_address_o  (int_desc_addr),
         .transfer_length_o(int_transfer_len),
         .start_read_i    (int_start_read),
-        .start_write_i   (int_start_write)
+        .start_write_i   (int_start_write),
+        .desc_fetch_o    (int_desc_fetch)
     );
 
     // ==========================================
@@ -313,7 +319,9 @@ module dma_top #(
         .wm_addr              (wm_addr),
         .master_len           (master_len),
         .wm_data              (wm_data),
-        .wm_strb              (wm_strb),
+        .desc_addr_o          (desc_addr_arb),
+        .desc_fetch_o         (desc_fetch_arb),
+        //.wm_strb              (wm_strb),
         .axi_read_done        (axi_read_done),
         .axi_write_done       (axi_write_done),
         .axi_read_data        (axi_read_data),
@@ -341,9 +349,8 @@ module dma_top #(
         .start_read_i           (rm_req),
         .src_addr_i             (rm_addr),
         .transfer_len_i         (master_len),
-        .desc_fetch_i           ( /*TBD*/),
-        .desc_addr_i            ( /*TBD*/),
-        .ch_ready_i             (/*TBD*/),
+        .desc_fetch_i           (desc_fetch_arb),
+        .desc_addr_i            (desc_addr_arb),
         .dest_addr_i            (wm_addr),
         .start_write_i          (wm_req),
         /********************************

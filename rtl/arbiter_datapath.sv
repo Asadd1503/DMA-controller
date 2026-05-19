@@ -4,7 +4,7 @@ module arbiter_datapath #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
     parameter DESC_WIDTH = 128,
-    parameter LEN_WIDTH  = 8
+    parameter LEN_WIDTH  = 24
 )(
     // --- Inputs from CPU ---
     input  logic [ADDR_WIDTH-1:0] read_addr,
@@ -21,7 +21,7 @@ module arbiter_datapath #(
     input  logic                  axi_read_done,
     input  logic                  axi_write_done,
     input  logic [DATA_WIDTH-1:0] axi_read_data,
-    input  logic [1:0]            axi_read_resp,
+   // input  logic [1:0]            axi_read_resp,
     input  logic [DESC_WIDTH-1:0] axi_desc_data,
     input  logic                  axi_data_valid,
     input  logic                  axi_read_error,
@@ -40,13 +40,13 @@ module arbiter_datapath #(
     output logic [ADDR_WIDTH-1:0] wm_addr,
     output logic [LEN_WIDTH-1:0]  master_len,
     output logic [DATA_WIDTH-1:0] wm_data,
-    output logic [2:0]            wm_strb,
+    //output logic [3:0]            wm_strb,
 
     // --- Outputs to CPU ---
     output logic                  c_read_done,
     output logic                  c_write_done,
     output logic [DATA_WIDTH-1:0] out_read_data,
-    output logic [1:0]            out_read_resp,
+    //output logic [1:0]            out_read_resp,
 
     // --- Outputs to DMA ---
     output logic                  d_read_done,
@@ -64,7 +64,7 @@ module arbiter_datapath #(
     // ==========================================
     always_comb begin
         // Read Address MUX
-        if (sel_cpu_r)      rm_addr = read_addr;
+        if      (sel_cpu_r) rm_addr = read_addr;
         else if (sel_dma_r) rm_addr = src_addr;
         else                rm_addr = '0; 
 
@@ -79,14 +79,25 @@ module arbiter_datapath #(
     // ==========================================
     always_comb begin
         if (sel_dma_r || sel_dma_w) master_len = transfer_len;
-        else                        master_len = '0; // CPU defaults to 0 (single beat)
+        else begin
+             case(write_strb)
+                4'b0001: master_len = 1;
+                4'b0010: master_len = 1;
+                4'b0100: master_len = 1;
+                4'b1000: master_len = 1;
+                4'b0011: master_len = 2;
+                4'b1100: master_len = 2;
+                4'b1111: master_len = 4;
+                default: master_len = 0;
+            endcase
+        end 
     end
 
     // ==========================================
     // Block 4: CPU Direct Data Pass-Through
     // ==========================================
     assign wm_data = write_data;
-    assign wm_strb = write_strb;
+    //assign wm_strb = write_strb;
 
     // ==========================================
     // Block 6: DONE Router (DeMUX)
@@ -102,7 +113,7 @@ module arbiter_datapath #(
     // ==========================================
     // To CPU
     assign out_read_data         = axi_read_data;
-    assign out_read_resp         = axi_read_resp;
+    //assign out_read_resp         = axi_read_resp;
     
     // To DMA
     assign out_desc_data         = axi_desc_data;

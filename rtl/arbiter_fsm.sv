@@ -9,6 +9,7 @@ module arbiter_fsm (
     input  logic write_req,      // CPU
     input  logic start_read_i,   // DMA
     input  logic start_write_i,  // DMA
+    input logic desc_fetch_i,   // DMA
 
     // --- Done Signals (From DONE_ROUTER) ---
     input  logic c_read_done,
@@ -52,10 +53,10 @@ module arbiter_fsm (
         case (current_state)
             ST_IDLE: begin
                 // Strict Priority Evaluation
-                if      (read_req)      next_state = ST_CPU_READ;
-                else if (write_req)     next_state = ST_CPU_WRITE;
-                else if (start_read_i)  next_state = ST_DMA_READ;
-                else if (start_write_i) next_state = ST_DMA_WRITE;
+                if      (read_req)                      next_state = ST_CPU_READ;
+                else if (write_req)                     next_state = ST_CPU_WRITE;
+                else if (start_read_i || desc_fetch_i)  next_state = ST_DMA_READ;
+                else if (start_write_i)                 next_state = ST_DMA_WRITE;
             end
 
             ST_CPU_READ: begin

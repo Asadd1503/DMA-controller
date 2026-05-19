@@ -10,7 +10,7 @@ module axi_master_top (
     //input logic [2:0]      burst_size_i,
     input logic              desc_fetch_i,
     input logic [ADDR_W-1:0] desc_addr_i,
-    input logic              ch_ready_i,
+    //input logic              ch_ready_i, // <-- remove this from axi rd master
     input logic [ADDR_W-1:0] dest_addr_i,
     input logic              start_write_i,
 
@@ -49,7 +49,7 @@ module axi_master_top (
     input logic               w_ready_i,
     // WRITE RESPONSE CHANNEL
     input logic               b_valid_i,
-    input logic [1:0]        b_resp_i,
+    input logic [1:0]         b_resp_i,
     output logic              b_ready_o
 
 
@@ -69,7 +69,7 @@ axi_master_rd_top axi_master_rd_top_inst (
     // .burst_size_i(burst_size_i),
     .desc_fetch_i(desc_fetch_i),
     .desc_addr_i(desc_addr_i),
-    .ch_ready_i(ch_ready_i),
+    // .ch_ready_i(ch_ready_i),
     // To Arbiter
     .read_done_o(read_done_o),
     .rd_master_idle_o(rd_master_idle_o),

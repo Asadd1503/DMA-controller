@@ -1,7 +1,7 @@
 module internal_dma_arbiter_top #(
     parameter N = 4,
     parameter ADDR_WIDTH = 32,
-    parameter LEN_WIDTH = 8
+    parameter LEN_WIDTH = 24
 )(
     input  logic                 clk,
     input  logic                 rst_n,
@@ -38,9 +38,11 @@ module internal_dma_arbiter_top #(
 
     output logic [ADDR_WIDTH-1:0] src_address_o,
     output logic [ADDR_WIDTH-1:0] dest_address_o,
+    output logic [ADDR_WIDTH-1:0] desc_address_o,
     output logic [LEN_WIDTH-1:0]  transfer_length_o,
     output logic                  start_read_i,
     output logic                  start_write_i,
+    output logic                  desc_fetch_o
 );
 
     // Internal Wires
@@ -81,7 +83,7 @@ module internal_dma_arbiter_top #(
         .sel_len(sel_len), .sel_type(sel_type),
         .src_address_o(src_address_o), .dest_address_o(dest_address_o),
         .transfer_length(transfer_length_o), .start_read_i(start_read_i), .start_write_i(start_write_i),
-        .desc_fetch_o(), .desc_address_o()
+        .desc_fetch_o(desc_fetch_o), .desc_address_o(desc_address_o)
     );
 
     resp_demux #(.N(N)) u_resp_demux (

@@ -17,18 +17,21 @@ module arbiter_top #(
     input  logic                  write_req,
     input  logic [ADDR_WIDTH-1:0] write_addr,
     input  logic [DATA_WIDTH-1:0] write_data,
-    input  logic [2:0]            write_strb,
+    input  logic [3:0]            write_strb,
     
     output logic                  c_read_done,
     output logic                  c_write_done,
     output logic [DATA_WIDTH-1:0] read_data,
-    output logic [1:0]            read_resp,
+    //output logic [1:0]            read_resp,
+    /* read_error and write_error to cpu not response */
 
     // ==========================================
     // DMA Interface (Lower Left)
     // ==========================================
     input  logic                  start_read_i,
     input  logic [ADDR_WIDTH-1:0] src_addr,
+    input  logic [ADDR_WIDTH-1:0] desc_addr_i,
+    input  logic                  desc_fetch_i,
     input  logic                  start_write_i,
     input  logic [ADDR_WIDTH-1:0] dest_addr,
     input  logic [LEN_WIDTH-1:0]  transfer_len,
@@ -48,17 +51,19 @@ module arbiter_top #(
     // To AXI Masters
     output logic                  rm_req,
     output logic [ADDR_WIDTH-1:0] rm_addr,
+    output logic [ADDR_WIDTH-1:0] desc_addr_o,
+    output logic                  desc_fetch_o,
     output logic                  wm_req,
     output logic [ADDR_WIDTH-1:0] wm_addr,
     output logic [LEN_WIDTH-1:0]  master_len,
     output logic [DATA_WIDTH-1:0] wm_data,
-    output logic [2:0]            wm_strb,
+    //output logic [3:0]            wm_strb,
 
     // From AXI Masters
     input  logic                  axi_read_done,
     input  logic                  axi_write_done,
     input  logic [DATA_WIDTH-1:0] axi_read_data,
-    input  logic [1:0]            axi_read_resp,
+    //input  logic [1:0]            axi_read_resp,
     input  logic [DESC_WIDTH-1:0] axi_desc_data,
     input  logic                  axi_data_valid,
     input  logic                  axi_read_error,
@@ -79,6 +84,11 @@ module arbiter_top #(
     logic int_d_read_done;
     logic int_d_write_done;
 
+    // ======= DESC ADDR and DESC FETCH Signal to AXI Master =======
+    assign desc_addr_o   = desc_addr_i;
+    assign desc_fetch_o  = desc_fetch_i;
+        
+
     // Output assignments for the done signals
     assign c_read_done  = int_c_read_done;
     assign c_write_done = int_c_write_done;
@@ -95,6 +105,7 @@ module arbiter_top #(
         .write_req      (write_req),
         .start_read_i   (start_read_i),
         .start_write_i  (start_write_i),
+        .desc_fetch_i    (desc_fetch_i),
         
         .c_read_done    (int_c_read_done),
         .c_write_done   (int_c_write_done),
@@ -133,7 +144,7 @@ module arbiter_top #(
         .axi_read_done         (axi_read_done),
         .axi_write_done        (axi_write_done),
         .axi_read_data         (axi_read_data),
-        .axi_read_resp         (axi_read_resp),
+        //.axi_read_resp         (axi_read_resp),
         .axi_desc_data         (axi_desc_data),
         .axi_data_valid        (axi_data_valid),
         .axi_read_error        (axi_read_error),
@@ -152,13 +163,13 @@ module arbiter_top #(
         .wm_addr               (wm_addr),
         .master_len            (master_len),
         .wm_data               (wm_data),
-        .wm_strb               (wm_strb),
+        //.wm_strb               (wm_strb),
         
         // CPU Outputs
         .c_read_done           (int_c_read_done),
         .c_write_done          (int_c_write_done),
         .out_read_data         (read_data),
-        .out_read_resp         (read_resp),
+        //.out_read_resp         (read_resp),
         
         // DMA Outputs
         .d_read_done           (int_d_read_done),
