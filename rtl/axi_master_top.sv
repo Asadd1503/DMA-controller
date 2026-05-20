@@ -10,9 +10,11 @@ module axi_master_top (
     //input logic [2:0]      burst_size_i,
     input logic              desc_fetch_i,
     input logic [ADDR_W-1:0] desc_addr_i,
-    //input logic              ch_ready_i, // <-- remove this from axi rd master
+    //input logic              ch_ready_i,// remove it
     input logic [ADDR_W-1:0] dest_addr_i,
     input logic              start_write_i,
+    input logic [DATA_W-1:0] c_data_i,
+    input logic              cpu_op_i,
 
     // To Arbiter
     output logic             read_done_o,
@@ -23,6 +25,7 @@ module axi_master_top (
     output logic             wr_master_idle_o,
     output logic             wr_done_o,
     output logic             wr_error_o,
+    output logic [DATA_W-1:0] c_data_o, 
     // READ Address Channel
     input logic              ar_ready_i,
     output logic             ar_valid_o,
@@ -57,6 +60,8 @@ module axi_master_top (
 logic fifo_full, fifo_empty, fifo_wr_en, fifo_rd_en;
 logic [DATA_W-1:0] fifo_wr_data;
 logic [DATA_W-1:0] fifo_rd_data;
+logic rst_wr_fifo, rst_rd_fifo;
+assign rst_fifo = rst_wr_fifo | rst_rd_fifo; 
 
 
 axi_master_rd_top axi_master_rd_top_inst (
@@ -69,6 +74,7 @@ axi_master_rd_top axi_master_rd_top_inst (
     // .burst_size_i(burst_size_i),
     .desc_fetch_i(desc_fetch_i),
     .desc_addr_i(desc_addr_i),
+    .cpu_op_i(cpu_op_i),
     // .ch_ready_i(ch_ready_i),
     // To Arbiter
     .read_done_o(read_done_o),
@@ -76,6 +82,7 @@ axi_master_rd_top axi_master_rd_top_inst (
     .read_error_o(read_error_o),
     .data_valid_o(data_valid_o),
     .desc_data_o(desc_data_o),
+    .cpu_data_o(c_data_o),
     // READ Address Channel
     .ar_ready_i(ar_ready_i),
     .ar_valid_o(ar_valid_o),
@@ -94,7 +101,8 @@ axi_master_rd_top axi_master_rd_top_inst (
     //.fifo_empty_i(fifo_empty),
     // To FIFO
     .fifo_wr_en_o(fifo_wr_en),
-    .fifo_data_o(fifo_wr_data)
+    .fifo_data_o(fifo_wr_data),
+    .rst_rd_fifo_o(rst_rd_fifo)
 
 );
 
@@ -109,6 +117,8 @@ axi_master_wr_top axi_master_wr_top_inst (
     .dest_addr_i(dest_addr_i),
     .start_write_i(start_write_i),
     .transfer_len_i(transfer_len_i),
+    .c_data_i(c_data_i),
+    .cpu_op_i(cpu_op_i),
     // WRITE ADDRESS CHANNEL
     .aw_ready_i(aw_ready_i),
     .aw_valid_o(aw_valid_o),
@@ -128,20 +138,22 @@ axi_master_wr_top axi_master_wr_top_inst (
     .fifo_empty_i(fifo_empty),
     .fifo_data_i(fifo_rd_data),
     // TO FIFO
-    .fifo_rd_en_o(fifo_rd_en)
+    .fifo_rd_en_o(fifo_rd_en),
+    .rst_wr_fifo_o(rst_wr_fifo)
 
 );
 sync_fifo #(
     .DATA_WIDTH(32),
     .FIFO_DEPTH(16)
 ) fifo_inst (
-    .clk(clk),
-    .rst_n(rst_n),
-    .wr_en(fifo_wr_en), 
-    .wr_data(fifo_wr_data), 
-    .rd_en(fifo_rd_en),
-    .rd_data(fifo_rd_data),
-    .full(fifo_full),
-    .empty(fifo_empty)
+    .clk            (clk        ),
+    .rst_n          (rst_n      ),
+    .rst_fifo_i     (rst_fifo   ),
+    .wr_en          (fifo_wr_en ), 
+    .wr_data        (fifo_wr_data), 
+    .rd_en          (fifo_rd_en ),
+    .rd_data        (fifo_rd_data),
+    .full           (fifo_full  ),
+    .empty          (fifo_empty )
 );
 endmodule

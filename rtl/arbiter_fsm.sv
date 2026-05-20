@@ -23,7 +23,8 @@ module arbiter_fsm (
     output logic sel_cpu_r,
     output logic sel_cpu_w,
     output logic sel_dma_r,
-    output logic sel_dma_w
+    output logic sel_dma_w,
+    output logic cpu_op_o,
 );
 
     // FSM State Encoding
@@ -88,15 +89,18 @@ module arbiter_fsm (
         sel_cpu_w = 1'b0;
         sel_dma_r = 1'b0;
         sel_dma_w = 1'b0;
+        cpu_op_o = 1'b0;
 
         case (current_state)
             ST_CPU_READ: begin
                 rm_req    = 1'b1;
                 sel_cpu_r = 1'b1;
+                cpu_op_o  = 1'b1; // Indicate CPU operation
             end
             ST_CPU_WRITE: begin
                 wm_req    = 1'b1;
                 sel_cpu_w = 1'b1;
+                cpu_op_o  = 1'b1; // Indicate CPU operation
             end
             ST_DMA_READ: begin
                 rm_req    = 1'b1;

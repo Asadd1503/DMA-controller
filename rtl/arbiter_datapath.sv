@@ -45,12 +45,16 @@ module arbiter_datapath #(
     // --- Outputs to CPU ---
     output logic                  c_read_done,
     output logic                  c_write_done,
+    output logic                  c_read_error,
+    output logic                  c_write_error,
     output logic [DATA_WIDTH-1:0] out_read_data,
     //output logic [1:0]            out_read_resp,
 
     // --- Outputs to DMA ---
     output logic                  d_read_done,
     output logic                  d_write_done,
+    output logic                  d_read_error,
+    output logic                  d_write_error,
     output logic [DESC_WIDTH-1:0] out_desc_data,
     output logic                  out_desc_valid,
     output logic                  out_read_error,
@@ -104,9 +108,13 @@ module arbiter_datapath #(
     // ==========================================
     assign c_read_done  = axi_read_done  & sel_cpu_r;
     assign d_read_done  = axi_read_done  & sel_dma_r;
-    
+    assign c_read_error = axi_read_error & sel_cpu_r;
+    assign d_read_error = axi_read_error & sel_dma_r;
+
     assign c_write_done = axi_write_done & sel_cpu_w;
     assign d_write_done = axi_write_done & sel_dma_w;
+    assign c_write_error = axi_write_error & sel_cpu_w;
+    assign d_write_error = axi_write_error & sel_dma_w;
 
     // ==========================================
     // Block 5: Response Router (Wire Mapping)
@@ -118,8 +126,8 @@ module arbiter_datapath #(
     // To DMA
     assign out_desc_data         = axi_desc_data;
     assign out_desc_valid        = axi_data_valid;
-    assign out_read_error        = axi_read_error;
-    assign out_write_error       = axi_write_error;
+    //assign out_read_error        = axi_read_error;
+    //assign out_write_error       = axi_write_error;
     assign out_read_master_idle  = axi_master_idle;
     assign out_write_master_idle = axi_wr_master_idle;
 

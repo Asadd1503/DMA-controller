@@ -4,7 +4,7 @@ module arbiter_top #(
     parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32,
     parameter DESC_WIDTH = 128,
-    parameter LEN_WIDTH  = 8
+    parameter LEN_WIDTH  = 24
 )(
     input logic clk,
     input logic rst_n,
@@ -22,6 +22,8 @@ module arbiter_top #(
     output logic                  c_read_done,
     output logic                  c_write_done,
     output logic [DATA_WIDTH-1:0] read_data,
+    output logic                  c_read_error_o,
+    output logic                  c_write_error_o,
     //output logic [1:0]            read_resp,
     /* read_error and write_error to cpu not response */
 
@@ -38,10 +40,12 @@ module arbiter_top #(
 
     output logic                  d_read_done,
     output logic                  d_write_done,
+    output logic                  d_read_error_o,
+    output logic                  d_write_error_o,
     output logic [DESC_WIDTH-1:0] desc_data,
     output logic                  desc_valid,
-    output logic                  read_error,
-    output logic                  write_error,
+    //output logic                  read_error,
+    //output logic                  write_error,
     output logic                  read_master_idle,
     output logic                  write_master_idle,
 
@@ -57,6 +61,7 @@ module arbiter_top #(
     output logic [ADDR_WIDTH-1:0] wm_addr,
     output logic [LEN_WIDTH-1:0]  master_len,
     output logic [DATA_WIDTH-1:0] wm_data,
+    output logic                  cpu_op_o, // New signal to indicate CPU operation
     //output logic [3:0]            wm_strb,
 
     // From AXI Masters
@@ -111,13 +116,14 @@ module arbiter_top #(
         .c_write_done   (int_c_write_done),
         .d_read_done    (int_d_read_done),
         .d_write_done   (int_d_write_done),
+        .cpu_op_o       (cpu_op_o),
         
         .rm_req         (rm_req),
         .wm_req         (wm_req),
         .sel_cpu_r      (sel_cpu_r),
         .sel_cpu_w      (sel_cpu_w),
         .sel_dma_r      (sel_dma_r),
-        .sel_dma_w      (sel_dma_w)
+        .sel_dma_w      (sel_dma_w),
     );
 
     // ==========================================
@@ -168,6 +174,8 @@ module arbiter_top #(
         // CPU Outputs
         .c_read_done           (int_c_read_done),
         .c_write_done          (int_c_write_done),
+        .c_read_error          (c_read_error_o),
+        .c_write_error         (c_write_error_o),
         .out_read_data         (read_data),
         //.out_read_resp         (read_resp),
         
@@ -176,8 +184,8 @@ module arbiter_top #(
         .d_write_done          (int_d_write_done),
         .out_desc_data         (desc_data),
         .out_desc_valid        (desc_valid),
-        .out_read_error        (read_error),
-        .out_write_error       (write_error),
+        .d_read_error          (d_read_error_o),
+        .d_write_error         (d_write_error_o),
         .out_read_master_idle  (read_master_idle),
         .out_write_master_idle (write_master_idle)
     );

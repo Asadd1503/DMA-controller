@@ -46,7 +46,9 @@ module dma_top #(
     output logic                  cpu_c_read_done,
     output logic                  cpu_c_write_done,
     output logic [DATA_WIDTH-1:0] cpu_read_data,
-    output logic [1:0]            cpu_read_resp,
+    output logic                  c_read_error_o,
+    output logic                  c_write_error_o,
+    //output logic [1:0]            cpu_read_resp,
 
     /*****************************************
         AXI MASTER <-> AXI SLAVE (MEMORY)
@@ -91,12 +93,13 @@ module dma_top #(
     logic [ADDR_WIDTH-1:0] wm_addr,
     logic [LEN_WIDTH-1:0]  master_len,
     logic [DATA_WIDTH-1:0] wm_data,
+    logic                  cpu_op, // New signal to indicate CPU operation
     //logic [3:0]            wm_strb,
     
     logic                  axi_read_done,
     logic                  axi_write_done,
     logic [DATA_WIDTH-1:0] axi_read_data,
-    logic [1:0]            axi_read_resp,
+    //logic [1:0]            axi_read_resp,
     logic [DESC_WIDTH-1:0] axi_desc_data,
     logic                  axi_data_valid,
     logic                  axi_read_error,
@@ -294,8 +297,10 @@ module dma_top #(
         .write_strb           (cpu_write_strb),
         .c_read_done          (cpu_c_read_done),
         .c_write_done         (cpu_c_write_done),
+        .c_read_error_o       (c_read_error_o),
+        .c_write_error_o      (c_write_error_o),
         .read_data            (cpu_read_data),
-        .read_resp            (cpu_read_resp),
+        //.read_resp            (cpu_read_resp),
 
         // DMA Interface (Lower Left) - Tied to Internal Arbiter 1x1
         .start_read_i         (int_start_read),
@@ -307,10 +312,12 @@ module dma_top #(
         .d_write_done         (int_write_done),
         .desc_data            (int_desc_data),
         .desc_valid           (int_desc_valid),
-        .read_error           (int_read_error),
-        .write_error          (int_write_error),
+        .d_read_error          (int_read_error),
+        .d_write_error         (int_write_error),
         .read_master_idle     (int_read_master_idle),
         .write_master_idle    (int_write_master_idle),
+        .desc_fetch_i          (int_desc_fetch),
+        .desc_addr_i           (int_desc_addr),
 
         // AXI Masters Interface (Right Side) - Exposed to Top
         .rm_req               (rm_req),
@@ -321,11 +328,12 @@ module dma_top #(
         .wm_data              (wm_data),
         .desc_addr_o          (desc_addr_arb),
         .desc_fetch_o         (desc_fetch_arb),
+        .cpu_op_o             (cpu_op),
         //.wm_strb              (wm_strb),
         .axi_read_done        (axi_read_done),
         .axi_write_done       (axi_write_done),
         .axi_read_data        (axi_read_data),
-        .axi_read_resp        (axi_read_resp),
+        //.axi_read_resp        (axi_read_resp),
         .axi_desc_data        (axi_desc_data),
         .axi_data_valid       (axi_data_valid),
         .axi_read_error       (axi_read_error),
@@ -353,6 +361,8 @@ module dma_top #(
         .desc_addr_i            (desc_addr_arb),
         .dest_addr_i            (wm_addr),
         .start_write_i          (wm_req),
+        .c_data_i               (wm_data),
+        .cpu_op_i                (cpu_op), 
         /********************************
             AXI MASTER -> ARBITER
         *********************************/
@@ -364,6 +374,7 @@ module dma_top #(
         .wr_master_idle_o       (axi_wr_master_idle),
         .wr_done_o              (axi_write_done),
         .wr_error_o             (axi_write_error),
+        .c_data_o               (axi_read_data),
         /*****************************************
             AXI MASTER <-> AXI SLAVE (MEMORY)
         ******************************************/
