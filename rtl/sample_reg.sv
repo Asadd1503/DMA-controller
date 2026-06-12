@@ -1,3 +1,4 @@
+
 import defs::*;
 module sample_reg (
     input logic clk,

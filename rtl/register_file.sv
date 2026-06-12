@@ -1,3 +1,4 @@
+
 module register_file #(
     parameter int N = 4
 )(
@@ -16,13 +17,17 @@ module register_file #(
     // outputs to channel FSMs
     output logic [N-1:0]                ch_en_o,
     output logic [31:0]                 desc_ptr_o [0:N-1],
+    output logic [N-1:0]                ch_abort_o   ,
+    output logic [1:0]                  err_resp_o [0:N-1],  // CPU's error response forwarded to FSM        // CPU abort bit forwarded to FSM
 
     // inputs from channel FSMs
     input  logic [1:0]                  error_i    [0:N-1],
     input  logic [N-1:0]                done_i,
+    input  logic [N-1:0]                resp_valid_i,     // channel says: I have an error to repor
     input  logic [N-1:0]                busy_i,
 
     // interrupt output to CPU
+    output logic [N-1:0]                err_irq_o,        // error interrupt to CPU
     output logic [N-1:0]                irq_o
 );
 // register map constants
@@ -51,7 +56,13 @@ module register_file #(
             assign desc_ptr_o[n] = register_bank[IDX_DESC_PTR_0 + n];
         end
     endgenerate
-
+    
+    generate
+    for (genvar n = 0; n < N; n++) begin
+        assign err_resp_o[n] = status_reg[n][5:4];  
+        assign ch_abort_o[n] = status_reg[n][6];     
+    end
+    endgenerate
 
 
     // ── read MUX — combinational ─────────────────────────────────
@@ -108,21 +119,32 @@ module register_file #(
 
                 if (wen &&
                     reg_index == ($clog2(REG_COUNT)'(IDX_STATUS_0 + i))) begin
-                    // CPU write-1-to-clear — clear bits where wdata=1
-                    status_reg[i] <= status_reg[i] & ~wdata;
+                         // bits [1:0] — W1C error bits (CPU clears by writing 1)
+                             status_reg[i][1:0] <= status_reg[i][1:0] & ~wdata[1:0]; 
+                             // bit [2] — W1C done bit
+                            status_reg[i][2]   <= status_reg[i][2] & ~wdata[2];
+                            // bits [5:4] — err_resp: CPU writes its 2-bit response
+                            status_reg[i][5:4] <= wdata[5:4];
+                            // bit [6] — ch_abort: CPU writes 1 to abort
+                            if (wdata[6]) begin
 
-                end else begin
-                    
-                    if (error_i[i] != 2'b00)
-                        status_reg[i][1:0] <= status_reg[i][1:0] | error_i[i];
+                            status_reg[i][6] <= 1'b1; end
 
-                    
-                    if (done_i[i])
-                        status_reg[i][2] <= 1'b1;
+                    end else begin
+    
+                            // hardware sets — existing logic
+                              if (error_i[i] != 2'b00) begin
 
-                    
-                    status_reg[i][3] <= busy_i[i];
-                end
+                                 status_reg[i][1:0] <= status_reg[i][1:0] | error_i[i]; end
+
+                              if (done_i[i])begin
+
+                                  status_reg[i][2] <= 1'b1; end
+
+                               status_reg[i][3] <= busy_i[i];
+                                  // auto-clear ch_abort after one cycle (it becomes a pulse to FSM)
+                               status_reg[i][6] <= 1'b0;
+                            end
 
             end
         end
@@ -135,6 +157,23 @@ module register_file #(
             irq_o <= done_i;
         end
     end
+
+    // ── Error IRQ generator ───────────────────────────────────────
+// Fires when channel asserts resp_valid_i AND there is a non-zero error
+always_ff @(posedge aclk or negedge rst_n) begin
+    if (!rst_n) begin
+        err_irq_o <= '0;
+    end else begin
+        for (int i = 0; i < N; i++) begin
+            // raise error IRQ when channel reports valid error response
+            if (resp_valid_i[i] && (status_reg[i][1:0] != 2'b00))
+                err_irq_o[i] <= 1'b1;
+            // clear when CPU writes back an acknowledgment (err_resp != 00)
+            else if (status_reg[i][5:4] != 2'b00)
+                err_irq_o[i] <= 1'b0;
+        end
+    end
+end
 
 endmodule
 /*

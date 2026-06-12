@@ -1,3 +1,4 @@
+
 module master_intf_bridge #(
     parameter ADDR_WIDTH = 32,
     parameter LEN_WIDTH = 8

@@ -1,3 +1,4 @@
+
 module ch_req_mux #(
     parameter N = 4,
     parameter ADDR_WIDTH = 32,
@@ -21,22 +22,28 @@ module ch_req_mux #(
     output logic [LEN_WIDTH-1:0]  sel_len,
     output logic                  sel_type
 );
-
-    always_ff @(posedge clk or negedge rst_n) begin
+    logic [31:0] desc_debug;
+    assign desc_debug = desc_address[current_ch_id];
+    //always_ff @(posedge clk or negedge rst_n) begin
+    always_comb begin
+    
+        
+    
         if (!rst_n) begin
             sel_src       <= '0;
             sel_dest      <= '0;
             sel_desc_addr <= '0;
             sel_len       <= '0;
             sel_type      <= '0;
-        end else if (sel_en) begin
+        end else if(sel_en) begin
             // Indexing works exactly the same!
-            sel_src       <= src_address[current_ch_id];
-            sel_dest      <= dest_address[current_ch_id];
-            sel_desc_addr <= desc_address[current_ch_id];
-            sel_len       <= len[current_ch_id];
-            sel_type      <= type_in[current_ch_id];
+            sel_src       = src_address[current_ch_id];
+            sel_dest      = dest_address[current_ch_id];
+            sel_desc_addr = desc_address[current_ch_id];
+            sel_len       = len[current_ch_id];
+            sel_type      = type_in[current_ch_id];
         end
     end
+    //$info("Selected desc_address: %0h", desc_address[current_ch_id]);
 
 endmodule

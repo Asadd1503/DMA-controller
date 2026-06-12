@@ -1,3 +1,4 @@
+
 import defs::*;
 
 module axi_master_rd_datapath (
@@ -48,6 +49,7 @@ module axi_master_rd_datapath (
     input logic nxt_addr_sel_i,
     input logic route_zeros_i,
     input logic latch_remain_burst_done_flag_i,
+    input logic ld_cpu_data_i,
     // To controller
     output logic burst_done_o,
     output logic beat_done_o,

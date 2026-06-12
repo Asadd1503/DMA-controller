@@ -1,21 +1,5 @@
-typedef enum  logic [3:0] {
-    IDLE,
-    LOAD_DESC_DATA,
-    LOAD,
-    SEND_AR,
-    RCV_DATA,
-    CONTINUE_RCV,
-    BURST_COUNT,
-    CHECK_REMAINING,
-    DONE,
-    LOAD_DESC_ADDR,
-    RCV_DESC_DATA,
-    PASS_DESC_DATA,
-    WAIT_VALID,
-    WAIT_FIFO,
-    WAIT_DESC_VALID,
-    READ_ERROR
-} state_t;
+
+
 module axi_master_rd_ctrl (
     input logic clk,
     input logic rst_n,
@@ -50,6 +34,7 @@ module axi_master_rd_ctrl (
     // From Arbiter
     input logic start_read_i,
     input logic desc_fetch_i,
+    input logic cpu_op_i,
     //input logic ch_ready_i,
     // To Arbiter
     output logic read_done_o,
@@ -72,6 +57,24 @@ module axi_master_rd_ctrl (
     
     
 );
+typedef enum  logic [3:0] {
+    IDLE,
+    LOAD_DESC_DATA,
+    LOAD,
+    SEND_AR,
+    RCV_DATA,
+    CONTINUE_RCV,
+    BURST_COUNT,
+    CHECK_REMAINING,
+    DONE,
+    LOAD_DESC_ADDR,
+    RCV_DESC_DATA,
+    PASS_DESC_DATA,
+    WAIT_VALID,
+    WAIT_FIFO,
+    WAIT_DESC_VALID,
+    READ_ERROR
+} state_t;
 state_t c_state, n_state;
 
 always_ff @(posedge clk or negedge rst_n) begin
@@ -122,16 +125,17 @@ always_comb begin
             end
         end
         CONTINUE_RCV: begin
+            if (beat_done_i) begin // Cross checking final beat.
+                n_state = BURST_COUNT;
+            end
             
-            if (!r_valid_i) begin
+            else if (!r_valid_i) begin
                 n_state = WAIT_VALID;
             end
             else if (fifo_full_i) begin
                 n_state = WAIT_FIFO;
             end
-            else if (beat_done_i && r_last_i) begin // Cross checking final beat.
-                n_state = BURST_COUNT;
-            end
+            
             else begin
                 n_state = CONTINUE_RCV;
             end
@@ -174,18 +178,19 @@ always_comb begin
             n_state = SEND_AR;
         end
         RCV_DESC_DATA: begin
-            if (!r_valid_i) begin
-                n_state = WAIT_DESC_VALID;
-            end
-            else if (desc_count_done_i) begin
+            if (desc_count_done_i) begin
                 n_state = PASS_DESC_DATA;
             end
+            else if (!r_valid_i) begin
+                n_state = WAIT_DESC_VALID;
+            end
+            
             else begin
                 n_state = RCV_DESC_DATA;
             end
         end
         PASS_DESC_DATA: begin
-            n_state = PASS_DESC_DATA;
+            n_state = DONE;
             
         end
         WAIT_DESC_VALID: begin
@@ -197,7 +202,7 @@ always_comb begin
             end
         end
         READ_ERROR: begin
-            n_state = IDLE
+            n_state = IDLE;
         end
     endcase
 end
@@ -270,6 +275,9 @@ always_comb begin
             if (r_valid_i) begin
                 beat_count_en_o = 1;
                 ld_cpu_data_o   = 1;
+                if (beat_done_i) begin
+                    beat_count_en_o = 0;
+                end
                 if (err_i) begin
                     route_zeros_o = 1;
                 end
@@ -280,6 +288,9 @@ always_comb begin
             if (r_valid_i) begin
                 beat_count_en_o = 1;
                 fifo_wr_en_o = 1;
+                if (beat_done_i) begin
+                    beat_count_en_o = 0;
+                end
                 if (err_i) begin
                     route_zeros_o = 1;
                 end
@@ -299,13 +310,14 @@ always_comb begin
             beat_count_en_o = 0;
             fifo_wr_en_o    = 0;
         end
+        if (beat_done_i) begin
+            burst_count_en_o = 1;
+        end
         if (!r_valid_i) begin
             beat_count_en_o = 0;
             fifo_wr_en_o    = 0;
         end
-        if (beat_done_i) begin
-            burst_count_en_o = 1;
-        end
+        
     end
     WAIT_VALID: begin
         r_ready_o       = 1;
@@ -348,6 +360,7 @@ always_comb begin
     end
     DONE: begin
         read_done_o = 1;
+        data_valid_o = 1;
     end
     LOAD_DESC_ADDR: begin
         ld_desc_addr_o = 1;
@@ -359,15 +372,16 @@ always_comb begin
         if (err_i) begin
             route_zeros_o = 1;
         end
-        if (!r_valid_i) begin
-            sample_en_o         = 0;
-            desc_count_en_o     = 0;   
-        end
         if (desc_count_done_i) begin
             sample_en_o         = 0;
             desc_count_en_o     = 0;
             ld_desc_data_r_o    = 1;
         end
+        else if (!r_valid_i) begin
+            sample_en_o         = 0;
+            desc_count_en_o     = 0;   
+        end
+        
     end
     PASS_DESC_DATA: begin
         data_valid_o = 1;

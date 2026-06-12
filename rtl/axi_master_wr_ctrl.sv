@@ -1,20 +1,5 @@
-typedef enum  logic [3:0] {
-    IDLE,
-    LOAD_DESC_DATA,
-    LOAD,
-    SEND_AW,
-    SEND_DATA,
-    CONTINUE_SEND,
-    WAIT_FOR_READY,
-    WAIT_EMPTY,
-    RCV_RESP,
-    RESP_CHECK,
-    BURST_COUNT,
-    CHECK_REMAINING,
-    WRITE_DONE,
-    WR_ERROR
-    
-} state_t;
+
+
 module axi_master_wr_ctrl (
     input logic clk,
     input logic rst_n,
@@ -73,7 +58,23 @@ module axi_master_wr_ctrl (
     output logic             rst_wr_fifo_o
 );
 
-
+typedef enum  logic [3:0] {
+    IDLE,
+    LOAD_DESC_DATA,
+    LOAD,
+    SEND_AW,
+    SEND_DATA,
+    CONTINUE_SEND,
+    WAIT_FOR_READY,
+    WAIT_EMPTY,
+    RCV_RESP,
+    RESP_CHECK,
+    BURST_COUNT,
+    CHECK_REMAINING,
+    WRITE_DONE,
+    WR_ERROR
+    
+} state_t;
 
 state_t c_state, n_state;
 
@@ -168,7 +169,7 @@ always_comb begin : next_state_logic_determination
             if (burst_done_i && remain_burst_done_flag_i) begin
                 n_state = WRITE_DONE;
             end
-            if (burst_done_i) begin
+            else if (burst_done_i) begin
                 n_state = CHECK_REMAINING;
             end
             else begin
@@ -261,10 +262,10 @@ always_comb begin : output_logic_determination
                 ld_rem_bytes_o  = 1;
             end
             else if (aw_ready_i && not_first_beat_flag_i) begin
-                ld_cur_addr_o   = 1;
+                ld_cur_addr_o   = 0;
                 cur_addr_sel_o  = 1;
                 rem_bytes_sel_o = 1;
-                ld_rem_bytes_o  = 1;
+                ld_rem_bytes_o  = 0;
             end
         end
         SEND_DATA: begin

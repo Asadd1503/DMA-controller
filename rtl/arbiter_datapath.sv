@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+
 
 module arbiter_datapath #(
     parameter ADDR_WIDTH = 32,

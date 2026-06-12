@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+
 
 module arbiter_top #(
     parameter ADDR_WIDTH = 32,
@@ -123,7 +123,7 @@ module arbiter_top #(
         .sel_cpu_r      (sel_cpu_r),
         .sel_cpu_w      (sel_cpu_w),
         .sel_dma_r      (sel_dma_r),
-        .sel_dma_w      (sel_dma_w),
+        .sel_dma_w      (sel_dma_w)
     );
 
     // ==========================================

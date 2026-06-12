@@ -1,3 +1,4 @@
+
 import defs::*;
 
 module axi_master_top (
@@ -144,7 +145,7 @@ axi_master_wr_top axi_master_wr_top_inst (
 );
 sync_fifo #(
     .DATA_WIDTH(32),
-    .FIFO_DEPTH(16)
+    .FIFO_DEPTH(1024)   // can accommodate 1024 beats
 ) fifo_inst (
     .clk            (clk        ),
     .rst_n          (rst_n      ),

@@ -1,9 +1,13 @@
+
 module resp_demux #(
     parameter N = 4
 )(
     // From Controller
     input  logic                 resp_en,
-    input  logic [2:0]           current_state, 
+    input  logic                 route_desc,
+    input  logic                 route_read,
+    input  logic                 route_write,
+    //input  logic [2:0]           current_state, 
     input  logic [$clog2(N)-1:0] current_ch_id,
 
     // From 2x1 Arbiter
@@ -24,9 +28,9 @@ module resp_demux #(
 );
 
     // State Encoding match from Controller
-    localparam [2:0] DESC_RD = 3'b010;
-    localparam [2:0] DATA_RD = 3'b100;
-    localparam [2:0] DATA_WR = 3'b110;
+    // localparam [2:0] DESC_RD = 3'b010;
+    // localparam [2:0] DATA_RD = 3'b100;
+    // localparam [2:0] DATA_WR = 3'b110;
 
     assign desc_data_out = desc_data_in; // Data flows through continuously
 
@@ -44,18 +48,18 @@ module resp_demux #(
             write_error[current_ch_id] = write_error_in;
 
             // Differentiate done pulses based on state
-            case (current_state)
-                DESC_RD: begin
-                    desc_valid[current_ch_id] = read_done_in;
-                end
-                DATA_RD: begin
-                    read_done[current_ch_id]  = read_done_in;
-                end
-                DATA_WR: begin
-                    write_done[current_ch_id] = write_done_in;
-                end
-                default: ; // Do nothing
-            endcase
+            
+            if (route_desc)begin
+                desc_valid[current_ch_id] = datavalid_in;
+            end
+            if (route_read) begin
+                read_done[current_ch_id]  = read_done_in;
+            end
+            if (route_write) begin
+                write_done[current_ch_id] = write_done_in;
+            end
+            
+           
         end
     end
 

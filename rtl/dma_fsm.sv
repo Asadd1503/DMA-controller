@@ -1,3 +1,4 @@
+
 module dma_fsm (
     input  logic         clk,
     input  logic         rst_n,
@@ -5,6 +6,7 @@ module dma_fsm (
     input  logic         ch_en,
     input  logic [31 :0] desc_ptr,
     input  logic         ch_abort,
+    input  logic [1  :0] error_response,
     input  logic         desc_valid,
     input  logic         grant,
     input  logic         read_done,
@@ -20,10 +22,11 @@ module dma_fsm (
     output logic         start_write,
     output logic [31 :0] src_addr,
     output logic [31 :0] dest_addr,
-    output logic [31 :0] len_and_flag,
+    output logic [23 :0] len,
     output logic         desc_fetch,
     output logic [31 :0] desc_addr,
-    output logic [1  :0] response_status 
+    output logic         response_valid,
+    output logic [1  :0] response_status
 );
 
     // Internal Registers
@@ -33,6 +36,7 @@ module dma_fsm (
     logic [31 :0] dest_addr_reg;
     logic [31 :0] len_and_flag_reg;
     logic [1  :0] response_reg;
+    logic         response_valid_reg;
 
     typedef enum logic [2 : 0] {
         IDLE,
@@ -51,19 +55,20 @@ module dma_fsm (
     // =========================================================================
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            current_state    <= IDLE;
-            nxt_desc_reg     <= '0;
-            ch_abort_reg     <= '0;
-            src_addr_reg     <= '0;
-            dest_addr_reg    <= '0;
-            len_and_flag_reg <= '0;
-            response_reg     <= '0;
+            current_state        <= IDLE;
+            nxt_desc_reg         <= '0;
+            ch_abort_reg         <= '0;
+            src_addr_reg         <= '0;
+            dest_addr_reg        <= '0;
+            len_and_flag_reg     <= '0;
+            response_reg         <= '0;
+            response_valid_reg   <= 1'b0;
         end else begin
             current_state <= next_state;
 
             case (current_state)
                 IDLE: begin
-                    ch_abort_reg <= '0; 
+                    ch_abort_reg    <= '0; 
                     response_reg    <= '0; 
                 end
                 REQUEST: begin
@@ -73,10 +78,15 @@ module dma_fsm (
                     if (ch_abort) ch_abort_reg <= 1'b1;
                 end
                 DECODE_DESC: begin
-                    src_addr_reg     <= desc_data[31 : 0];
-                    dest_addr_reg    <= desc_data[63 :32];
-                    len_and_flag_reg <= desc_data[95 :64];
-                    nxt_desc_reg     <= desc_data[127:96];
+                    //src_addr_reg     <= desc_data[31 : 0];
+                    //dest_addr_reg    <= desc_data[63 :32];
+                    //len_and_flag_reg <= desc_data[95 :64];
+                    //nxt_desc_reg     <= desc_data[127:96];
+
+                    nxt_desc_reg     <= desc_data[31 : 0];
+                    len_and_flag_reg <= desc_data[63 :32];
+                    dest_addr_reg    <= desc_data[95 :64];
+                    src_addr_reg     <= desc_data[127:96];
                     
 
                     response_reg     <= 2'b00; 
@@ -84,6 +94,12 @@ module dma_fsm (
                 START_TRANSACTION: begin
                     if (read_error)  response_reg[0] <= 1'b1;
                     if (write_error) response_reg[1] <= 1'b1;
+
+                    if (write_done ) response_valid_reg  <= 1'b1;
+                    else             response_valid_reg  <= 1'b0;
+                end
+                RESPONSE: begin
+                    response_valid_reg <= 1'b0;
                 end
             endcase
         end
@@ -112,16 +128,24 @@ module dma_fsm (
                 else next_state = START_TRANSACTION;
             end
             START_TRANSACTION: begin
-                if (ch_abort) begin
-                    next_state = ABORT;
-                end 
-                else if (read_done && write_done) begin
+                if (write_done) begin
                     next_state = RESPONSE; 
                 end
             end
             RESPONSE: begin
-                if (!len_and_flag_reg[25]) next_state = REQUEST;
-                else next_state = IDLE;
+                if (error_response == 2'b00) begin
+                    next_state = RESPONSE;
+                end
+                else if (error_response == 2'b01) begin
+                    if (!len_and_flag_reg[24]) next_state = REQUEST;
+                    else                       next_state = IDLE;
+                end
+                else if (error_response == 2'b10) begin
+                    next_state = ABORT;
+                end
+                else begin
+                    next_state = IDLE;
+                end              
             end
             ABORT: begin
                 next_state = IDLE;
@@ -135,7 +159,7 @@ module dma_fsm (
     always_comb begin
         // 1. DEFINE DEFAULTS
         ch_done         = 1'b0;
-        busy            = 1'b1; 
+        busy            = 1'b0; 
         ch_req          = 1'b0;
         start_read      = 1'b0;
         start_write     = 1'b0;
@@ -143,29 +167,34 @@ module dma_fsm (
         
         src_addr        = src_addr_reg;
         dest_addr       = dest_addr_reg;
-        len_and_flag    = len_and_flag_reg;
+        len    = len_and_flag_reg[23 : 0];
         desc_addr       = nxt_desc_reg;
         
+        response_valid  = response_valid_reg;
         response_status = response_reg;
 
         case (current_state)
-            IDLE: begin
-                busy = 1'b0;
-            end
             REQUEST: begin
+                busy   = 1'b1;
                 ch_req = 1'b1;
             end
             FETCH_DESC: begin
+                busy       = 1'b1;
+                ch_req     = 1'b0;
                 desc_fetch = 1'b1;
             end
+            DECODE_DESC: begin
+                busy       = 1'b1;
+                //desc_fetch = !desc_valid;
+            end
             START_TRANSACTION: begin
+                busy       = 1'b1;
                 if (!read_done)  start_read  = 1'b1;
                 if (!write_done) start_write = 1'b1;
             end
             RESPONSE: begin
-
-
-                if (len_and_flag_reg[25]) begin
+                busy       = 1'b1;
+                if (len_and_flag_reg[24]) begin
                     ch_done = 1'b1;
                     busy    = 1'b0;
                 end

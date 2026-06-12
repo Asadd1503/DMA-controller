@@ -1,3 +1,4 @@
+
 module internal_dma_arbiter_top #(
     parameter N = 4,
     parameter ADDR_WIDTH = 32,
@@ -54,7 +55,8 @@ module internal_dma_arbiter_top #(
     logic                  sel_type;
     logic                 do_read_trigger, do_write_trigger;
     logic                 resp_en;
-    logic [2:0]           fsm_state;
+    logic                 route_desc, route_read, route_write;
+   // logic [2:0]           fsm_state;
 
     // OR-reduce the control signals for the Controller
     logic ch_rq_any, start_read_any, write_start_any;
@@ -87,11 +89,12 @@ module internal_dma_arbiter_top #(
     );
 
     resp_demux #(.N(N)) u_resp_demux (
-        .resp_en(resp_en), .current_state(fsm_state), .current_ch_id(current_ch_id),
+        .resp_en(resp_en), .current_ch_id(current_ch_id),
         .read_done_in(read_done_in), .write_done_in(write_done_in), .read_error_in(read_error_in),
         .write_error_in(write_error_in), .datavalid_in(datavalid_in), .desc_data_in(desc_data_in),
         .read_done(read_done), .write_done(write_done), .read_error(read_error),
-        .write_error(write_error), .desc_valid(desc_valid), .desc_data_out(desc_data_out)
+        .write_error(write_error), .desc_valid(desc_valid), .desc_data_out(desc_data_out),
+        .route_desc(route_desc), .route_read(route_read), .route_write(route_write)
     );
 
     arbiter_controller u_controller (
@@ -100,7 +103,8 @@ module internal_dma_arbiter_top #(
         .rd_master_idle(rd_master_idle), .wr_master_idle(wr_master_idle),
         .read_done_in(read_done_in), .write_done_in(write_done_in),
         .sel_en(sel_en), .do_read_trigger(do_read_trigger), .do_write_trigger(do_write_trigger),
-        .resp_en(resp_en), .update_rr_ptr(update_rr_ptr), .fsm_state(fsm_state)
+        .resp_en(resp_en), .update_rr_ptr(update_rr_ptr),
+        .route_desc(route_desc), .route_read(route_read), .route_write(route_write)
     );
 
 endmodule

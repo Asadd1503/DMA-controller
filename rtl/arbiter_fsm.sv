@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+
 
 module arbiter_fsm (
     input  logic clk,
@@ -24,7 +24,7 @@ module arbiter_fsm (
     output logic sel_cpu_w,
     output logic sel_dma_r,
     output logic sel_dma_w,
-    output logic cpu_op_o,
+    output logic cpu_op_o
 );
 
     // FSM State Encoding

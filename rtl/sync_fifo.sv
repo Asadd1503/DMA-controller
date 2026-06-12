@@ -1,3 +1,4 @@
+
 module sync_fifo #(
     parameter int DATA_WIDTH = 32,
     parameter int FIFO_DEPTH = 16

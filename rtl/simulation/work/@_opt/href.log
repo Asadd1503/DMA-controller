@@ -1,0 +1,94 @@
+BEGIN 3:axi4_lite_if:fast__1:work
+    rresp :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    wdata :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    aclk :  1:axi4_lite_slave:fast:work
+    bvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    bready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    rdata :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    wstrb :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    rst_n :  1:axi4_lite_slave:fast:work
+    bresp :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    arready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    arvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    awaddr :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    awready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    awvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    rvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    rready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    araddr :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    wready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    wvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+END 
+BEGIN 3:dma_interface:fast__1:work
+    wdata :  1:dma_pkg:fast:work
+    awready :  1:dma_pkg:fast:work
+    wready :  1:dma_pkg:fast:work
+    ar_valid_o :  1:dma_pkg:fast:work
+    awaddr :  1:dma_pkg:fast:work
+    r_ready_o :  1:dma_pkg:fast:work
+    wstrb :  1:dma_pkg:fast:work
+    bresp :  1:dma_pkg:fast:work
+    reset_done :  1:dma_pkg:fast:work
+    aclk :  1:dma_pkg:fast:work
+    bready :  1:dma_pkg:fast:work
+    r_data_i :  1:dma_pkg:fast:work
+    wvalid :  1:dma_pkg:fast:work
+    bvalid :  1:dma_pkg:fast:work
+    awvalid :  1:dma_pkg:fast:work
+    ar_ready_i :  1:dma_pkg:fast:work
+    r_valid_i :  1:dma_pkg:fast:work
+END 
+BEGIN 3:dma_interface:fast__2:work
+    r_resp_i :  1:dma_top:fast:work
+    cpu_write_data :  1:dma_top:fast:work
+    wvalid :  1:dma_top:fast:work
+    r_ready_o :  1:dma_top:fast:work
+    cpu_write_strb :  1:dma_top:fast:work
+    wready :  1:dma_top:fast:work
+    aw_ready_i :  1:dma_top:fast:work
+    cpu_c_read_done :  1:dma_top:fast:work
+    bresp :  1:dma_top:fast:work
+    aw_valid_o :  1:dma_top:fast:work
+    cpu_c_write_done :  1:dma_top:fast:work
+    bvalid :  1:dma_top:fast:work
+    aw_addr_o :  1:dma_top:fast:work
+    c_read_error_o :  1:dma_top:fast:work
+    bready :  1:dma_top:fast:work
+    aw_len_o :  1:dma_top:fast:work
+    c_write_error_o :  1:dma_top:fast:work
+    araddr :  1:dma_top:fast:work
+    aw_size_o :  1:dma_top:fast:work
+    cpu_read_data :  1:dma_top:fast:work
+    arvalid :  1:dma_top:fast:work
+    aw_burst_o :  1:dma_top:fast:work
+    ar_ready_i :  1:dma_top:fast:work
+    arready :  1:dma_top:fast:work
+    w_valid_o :  1:dma_top:fast:work
+    ar_valid_o :  1:dma_top:fast:work
+    rdata :  1:dma_top:fast:work
+    w_data_o :  1:dma_top:fast:work
+    ar_addr_o :  1:dma_top:fast:work
+    rresp :  1:dma_top:fast:work
+    w_ready_i :  1:dma_top:fast:work
+    ar_len_o :  1:dma_top:fast:work
+    rvalid :  1:dma_top:fast:work
+    b_valid_i :  1:dma_top:fast:work
+    ar_size_o :  1:dma_top:fast:work
+    rready :  1:dma_top:fast:work
+    awaddr :  1:dma_top:fast:work
+    b_resp_i :  1:dma_top:fast:work
+    ar_burst_o :  1:dma_top:fast:work
+    cpu_read_req :  1:dma_top:fast:work
+    awvalid :  1:dma_top:fast:work
+    b_ready_o :  1:dma_top:fast:work
+    r_valid_i :  1:dma_top:fast:work
+    cpu_read_addr :  1:dma_top:fast:work
+    awready :  1:dma_top:fast:work
+    reset_done :  1:tb_top:fast:work
+    r_data_i :  1:dma_top:fast:work
+    cpu_write_req :  1:dma_top:fast:work
+    wdata :  1:dma_top:fast:work
+    r_last_i :  1:dma_top:fast:work
+    cpu_write_addr :  1:dma_top:fast:work
+    wstrb :  1:dma_top:fast:work
+END 

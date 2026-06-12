@@ -1,3 +1,4 @@
+
 module dma_reg_top #(
     parameter int N = 4
 )(
@@ -35,14 +36,18 @@ module dma_reg_top #(
     // outputs to channel FSMs
     output logic [N-1:0]        ch_en_o,
     output logic [31:0]         desc_ptr_o [0:N-1],
+    output logic [1:0]          err_resp_o [0:N-1],  // CPU's error response forwarded to FSM
+    output logic [N-1:0]        ch_abort_o ,          // CPU abort bit forwarded to FSM
 
     // inputs from channel FSMs
     input  logic [1:0]          error_i    [0:N-1],
     input  logic [N-1:0]        done_i,
+    input  logic [N-1:0]        resp_valid_i,     // channel says: I have an error to report
     input  logic [N-1:0]        busy_i,
 
     // interrupt output to CPU
-    output logic [N-1:0]        irq_o
+    output logic [N-1:0]        irq_o,
+    output logic [N-1:0]        err_irq_o      // error interrupt to CPU
 );
 
 // ── interface instantiation ───────────────────────────────────
@@ -135,7 +140,11 @@ module dma_reg_top #(
         .busy_i      (busy_i),
 
         // interrupt output
-        .irq_o       (irq_o)
+        .irq_o       (irq_o),
+        .resp_valid_i (resp_valid_i),
+        .err_irq_o    (err_irq_o),
+        .err_resp_o   (err_resp_o),
+       .ch_abort_o    (ch_abort_o)
     );
 
 endmodule
