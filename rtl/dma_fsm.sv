@@ -26,7 +26,8 @@ module dma_fsm (
     output logic         desc_fetch,
     output logic [31 :0] desc_addr,
     output logic         response_valid,
-    output logic [1  :0] response_status
+    output logic [1  :0] response_status,
+    output logic         clear_en_o
 );
 
     // Internal Registers
@@ -164,10 +165,10 @@ module dma_fsm (
         start_read      = 1'b0;
         start_write     = 1'b0;
         desc_fetch      = 1'b0;
-        
+        clear_en_o      = 1'b0;
         src_addr        = src_addr_reg;
         dest_addr       = dest_addr_reg;
-        len    = len_and_flag_reg[23 : 0];
+        len             = len_and_flag_reg[23 : 0];
         desc_addr       = nxt_desc_reg;
         
         response_valid  = response_valid_reg;
@@ -175,8 +176,9 @@ module dma_fsm (
 
         case (current_state)
             REQUEST: begin
-                busy   = 1'b1;
-                ch_req = 1'b1;
+                busy        = 1'b1;
+                ch_req      = 1'b1;
+                clear_en_o  = 1'b1;
             end
             FETCH_DESC: begin
                 busy       = 1'b1;

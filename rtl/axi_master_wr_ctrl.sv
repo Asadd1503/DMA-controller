@@ -38,7 +38,7 @@ module axi_master_wr_ctrl (
     output logic             set_beat_flag_o,
     output logic             latch_remain_burst_done_flag_o,
     output logic             set_wr_error_o,
-    output logic             rst_wr_error_o,
+    //output logic             rst_wr_error_o,
     output logic             ld_cpu_data_o,
     output logic             sel_cpu_data_o,
      // To Arbiter
@@ -120,14 +120,14 @@ always_comb begin : next_state_logic_determination
             end
         end
         CONTINUE_SEND: begin
-            if (!w_ready_i) begin
+            if (beat_done_i) begin
+                n_state = RCV_RESP;
+            end
+            else if (!w_ready_i) begin
                 n_state = WAIT_FOR_READY; 
             end
             else if (fifo_empty_i) begin
                 n_state = WAIT_EMPTY;
-            end
-            else if (beat_done_i) begin
-                n_state = RCV_RESP;
             end
             else begin
                 n_state = CONTINUE_SEND;
@@ -222,7 +222,7 @@ always_comb begin : output_logic_determination
     rst_beat_flag_o = 1;
     set_beat_flag_o = 0;
     latch_remain_burst_done_flag_o = 0;
-    rst_wr_error_o = 1;
+    //rst_wr_error_o = 1;
     ld_cpu_data_o = 0;
     sel_cpu_data_o = 0;
     rst_wr_fifo_o = 0;
@@ -233,7 +233,7 @@ always_comb begin : output_logic_determination
         IDLE: begin
             wr_master_idle_o = 1;
             rst_beat_flag_o  = 0;
-            rst_wr_error_o    = 0; 
+            //rst_wr_error_o    = 0; 
         end
         LOAD_DESC_DATA: begin
             if (cpu_op_i) begin
@@ -281,6 +281,9 @@ always_comb begin : output_logic_determination
                     rem_bytes_sel_o = 1;
                     ld_rem_bytes_o  = 1;
                     ld_cur_addr_o   = 1;
+                    if (beat_done_i) begin
+                        beat_count_en_o = 0;
+                    end
                 end
             end
             if (!fifo_empty_i) begin
@@ -292,6 +295,9 @@ always_comb begin : output_logic_determination
                     rem_bytes_sel_o = 1;
                     ld_rem_bytes_o  = 1;
                     ld_cur_addr_o   = 1;
+                    if (beat_done_i) begin
+                        beat_count_en_o = 0;
+                    end
                 end
                 
             end
@@ -304,11 +310,18 @@ always_comb begin : output_logic_determination
             rem_bytes_sel_o = 1;
             ld_rem_bytes_o  = 1;
             ld_cur_addr_o   = 1;
-            if (cpu_op_i) begin
+            
+            if (beat_done_i) begin
+                beat_count_en_o = 0;
+                fifo_rd_en_o    = 0;
+                ld_rem_bytes_o  = 0;
+                ld_cur_addr_o   = 0;
+            end
+            else if (cpu_op_i) begin
                 sel_cpu_data_o  = 1;
                 fifo_rd_en_o    = 0;
             end
-            if (!w_ready_i) begin
+            else if (!w_ready_i) begin
                 fifo_rd_en_o    = 0;
                 beat_count_en_o = 0;
                 ld_rem_bytes_o  = 0;

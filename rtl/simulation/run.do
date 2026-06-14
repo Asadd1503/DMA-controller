@@ -17,6 +17,12 @@ vsim -voptargs=+acc work.tb_top
 # 5. Add waveforms and run
 add wave -group "DMA IF" /tb_top/dma_if/*
 add wave -group "DMA DUT" /tb_top/dma_dut/*
+
+add wave -group "DMA REG TOP" /tb_top/dma_dut/dma_reg_top_inst/*
+add wave -group "REGISTER FILE" /tb_top/dma_dut/dma_reg_top_inst/u_reg_file/*
+add wave -group "SLAVE CONTROLLER" /tb_top/dma_dut/dma_reg_top_inst/u_axi_slave/*
+add wave -group "AXI LITE INTF" /tb_top/dma_dut/dma_reg_top_inst/axi_if/*
+
 add wave -group "DMA FSM CH 0" /tb_top/dma_dut/gen_dma_fsm[0]/dma_fsm_inst/*
 add wave -group "INTERNAL ARBITER" /tb_top/dma_dut/int_arbiter_inst/*
 add wave -group "INTERNAL ARBITER CH_REQ_MUX" /tb_top/dma_dut/int_arbiter_inst/u_ch_mux/*

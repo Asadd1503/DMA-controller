@@ -36,7 +36,8 @@ module arbiter_controller (
         WAIT_DATA_WR = 4'b0101,
         DATA_WR      = 4'b0110,
         COMPLETE     = 4'b0111,
-        REQ_SEL      = 4'b1000
+        REQ_SEL      = 4'b1000,
+        PASS_ERRORS  = 4'b1001
     } state_t;
 
     state_t current_state, next_state;
@@ -88,7 +89,7 @@ module arbiter_controller (
             end
 
             DESC_RD: begin
-                sel_en = 1'b1; // Keep the selection locked until we get the descriptor
+                //sel_en = 1'b1; // Keep the selection locked until we get the descriptor
                 if (read_done_in) begin
                     resp_en    = 1'b1; // Pulse desc_valid
                     route_desc = 1'b1;
@@ -102,13 +103,17 @@ module arbiter_controller (
                     do_read_trigger = 1'b1;
                     next_state      = DATA_RD;
                 end
+                if (write_start && wr_master_idle) begin
+                    do_write_trigger = 1'b1;
+                    //next_state       = DATA_WR;
+                end
             end
 
             DATA_RD: begin
                 if (read_done_in) begin
                     resp_en    = 1'b1; // Pulse read_done
                     route_read = 1'b1;
-                    next_state = WAIT_DATA_WR;
+                    next_state = DATA_WR;
                 end
             end
 
@@ -123,10 +128,13 @@ module arbiter_controller (
                 if (write_done_in) begin
                     resp_en    = 1'b1; // Pulse write_done
                     route_write = 1'b1;
-                    next_state = COMPLETE;
+                    next_state = PASS_ERRORS;
                 end
             end
-
+            PASS_ERRORS: begin
+                resp_en    = 1'b1; 
+                next_state = COMPLETE;
+            end
             COMPLETE: begin
                 update_rr_ptr = 1'b1; // Move the pointer to next channel
                 next_state    = IDLE;

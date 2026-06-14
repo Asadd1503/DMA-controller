@@ -25,6 +25,7 @@ module register_file #(
     input  logic [N-1:0]                done_i,
     input  logic [N-1:0]                resp_valid_i,     // channel says: I have an error to repor
     input  logic [N-1:0]                busy_i,
+    input  logic [N-1:0]                clear_en_i,       // signal from FSM to clear CH_EN bit (on abort or completion)
 
     // interrupt output to CPU
     output logic [N-1:0]                err_irq_o,        // error interrupt to CPU
@@ -105,6 +106,16 @@ module register_file #(
                         register_bank[reg_index][8*b +: 8] <= wdata[8*b +: 8];
                 end
             end
+            // --- 2. HARDWARE CLEAR PATH (Takes Priority) ---
+            // Because this is evaluated after the CPU write, if both the CPU 
+            // and the hardware try to change a bit in the exact same clock cycle,
+            // this hardware clear will overwrite the CPU's action.
+            for (int c = 0; c < N; c++) begin
+                if (clear_en_i[c]) begin
+                    // IDX_CH_EN is 0, so register_bank[0] is the CH_EN register
+                    register_bank[IDX_CH_EN][c] <= 1'b0; 
+                end
+            end
         end
     end
 
@@ -150,11 +161,18 @@ module register_file #(
         end
     end
     // ── IRQ generator ─────────────────────────────────────────────
-    always_ff @(posedge aclk or negedge rst_n) begin
+    always_comb begin
         if (!rst_n) begin
             irq_o <= '0;
         end else begin
-            irq_o <= done_i;
+            //irq_o <= done_i;
+            for (int i = 0; i < N; i++) begin
+            
+                if (status_reg[i][2] == 1'b1)
+                    irq_o[i] = 1'b1;
+                
+                else irq_o[i] = 1'b0;
+            end
         end
     end
 
@@ -176,6 +194,7 @@ always_ff @(posedge aclk or negedge rst_n) begin
 end
 
 endmodule
+
 /*
 Suppose current register value = 0x11223344
 Bytes: b3=0x11, b2=0x22, b1=0x33, b0=0x44

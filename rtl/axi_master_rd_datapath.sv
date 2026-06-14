@@ -77,10 +77,10 @@ logic [127:0] sample_reg_data_o;
 logic [23:0]                         total_beats;
 logic [$clog2(MAX_ALLOWED_BURSTS):0] no_bursts;
 logic [$clog2(MAX_ALLOWED_BURSTS):0] no_bursts_selected;
-logic [$clog2(MAX_BEATS)-1:0]        no_beats;
-logic [$clog2(MAX_BEATS)-1:0]        remaining_beats;
-logic [$clog2(MAX_BEATS)-1:0]        beat_cntr_data_i;
-logic [$clog2(MAX_BEATS)-1:0]        no_beats_r;
+logic [$clog2(MAX_BEATS):0]        no_beats;
+logic [$clog2(MAX_BEATS):0]        remaining_beats;
+logic [$clog2(MAX_BEATS):0]        beat_cntr_data_i;
+logic [$clog2(MAX_BEATS):0]        no_beats_r;
 //logic select_addr_mux; 
 assign read_error_o = err_flag_r; 
 //assign ar_addr_o = addr_mux_o;
@@ -194,7 +194,7 @@ end
 //------------------ BEATS REG -----------------------
 always_ff @(posedge clk or negedge rst_n) begin : BEATS_REG
     if (!rst_n) no_beats_r <= '0;
-    else if (load_beats_reg_i) no_beats_r <= beat_cntr_data_i;
+    else if (load_beats_reg_i) no_beats_r <= (beat_cntr_data_i - 1);
     
 end
 //------------------ AR LEN SEL MUX (DESC_LEN VS BURST LEN)---------------
@@ -207,10 +207,10 @@ end
 //------- MUX to select between no_beats and remaining_beats for ar_len_o and BEAT COUNTER---
 always_comb begin 
     if (!beat_sel_i) begin
-        beat_cntr_data_i = (no_beats - 1);
+        beat_cntr_data_i = (no_beats);
     end
     else begin
-        beat_cntr_data_i = (remaining_beats - 1);
+        beat_cntr_data_i = (remaining_beats);
     end
 end
 //------------------------------------------------------------

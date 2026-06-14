@@ -44,6 +44,7 @@ module dma_reg_top #(
     input  logic [N-1:0]        done_i,
     input  logic [N-1:0]        resp_valid_i,     // channel says: I have an error to report
     input  logic [N-1:0]        busy_i,
+    input  logic [N-1:0]        clear_en_i,       // signal from FSM to clear CH_EN bit (on abort or completion)
 
     // interrupt output to CPU
     output logic [N-1:0]        irq_o,
@@ -138,7 +139,7 @@ module dma_reg_top #(
         .error_i     (error_i),
         .done_i      (done_i),
         .busy_i      (busy_i),
-
+        .clear_en_i  (clear_en_i),
         // interrupt output
         .irq_o       (irq_o),
         .resp_valid_i (resp_valid_i),

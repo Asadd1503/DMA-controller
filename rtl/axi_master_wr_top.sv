@@ -78,6 +78,7 @@ axi_master_wr_datapath wr_datapath (
     .dest_addr_i(dest_addr_i),
     .trans_len_i(transfer_len_i),
     .c_data_i(c_data_i),
+    .write_start_i(start_write_i),
     // to controller
     .beat_done_o(beat_done),
     .burst_done_o(burst_done),
@@ -92,7 +93,7 @@ axi_master_wr_datapath wr_datapath (
     .ld_burst_cntr_i(ld_burst_cntr),
     .burst_count_en_i(burst_count_en),
     .set_wr_error_i(set_wr_error),
-    .rst_wr_error_i(rst_wr_error),
+    //.rst_wr_error_i(rst_wr_error),
     .burst_sel_i(burst_sel),
     .ld_beat_cntr_i(ld_beat_cntr),
     .beat_count_en_i(beat_count_en),
@@ -144,7 +145,7 @@ axi_master_wr_ctrl wr_ctrl (
     .err_i(err),
     //to datapath
     .set_wr_error_o(set_wr_error),
-    .rst_wr_error_o(rst_wr_error),
+    //.rst_wr_error_o(rst_wr_error),
     .ld_dest_addr_o(ld_dest_addr),
     .ld_trans_len_o(ld_trans_len),
     .nxt_addr_sel_o(nxt_addr_sel),

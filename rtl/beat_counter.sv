@@ -8,7 +8,7 @@ module beat_counter #(
 
     // control
     input  logic                        load,            // 1-cycle pulse: latch total_bursts
-    input  logic [BEAT_CNT_WIDTH-1:0]  total_beats,    // from your pre-compute unit
+    input  logic [BEAT_CNT_WIDTH:0]  total_beats,    // from your pre-compute unit
     input logic                         count_en,
     // decrement trigger
     output logic                        beat_done     // 1-cycle pulse per completed beat
@@ -17,7 +17,7 @@ module beat_counter #(
     
 );
 
-    logic [BEAT_CNT_WIDTH-1:0] cnt;
+    logic [BEAT_CNT_WIDTH:0] cnt;
 
     always_ff @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin

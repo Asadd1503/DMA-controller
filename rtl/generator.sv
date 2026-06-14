@@ -34,5 +34,10 @@ class generator;
         data_trans.data = new[1];
         data_trans.data[0] = 32'hDEADBEEF;
         gen2drv.put(data_trans);
+        // generating status read transaction
+        trans = new();
+        trans.is_write = 1'b0;
+        trans.addr = 32'h14; // status_reg[0]
+        gen2drv.put(trans);
     endtask
 endclass

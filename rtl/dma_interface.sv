@@ -105,6 +105,8 @@ interface dma_interface #(
     logic                  b_ready_o;
     //======================================
     event reset_done;
+    logic                  rd_master_idle_o;
+    logic                  wr_master_idle_o;
 
     // =========================================================================
     // Modport 1 : axi_master  — TB / driver side for AXI4 Full
@@ -148,7 +150,10 @@ interface dma_interface #(
         // Write Response Channel
         output b_valid_i,           // TB sends write response
         output b_resp_i,
-        input  b_ready_o            // DUT consumed the response
+        input  b_ready_o,            // DUT consumed the response
+        // testing signal
+        input  rd_master_idle_o,
+        input  wr_master_idle_o
     );
 
     // =========================================================================
@@ -190,7 +195,10 @@ interface dma_interface #(
         // Write Response Channel
         input  b_valid_i,
         input  b_resp_i,
-        output b_ready_o
+        output b_ready_o,
+        // testing signal
+        output rd_master_idle_o,
+        output wr_master_idle_o
     );
 
     // =========================================================================

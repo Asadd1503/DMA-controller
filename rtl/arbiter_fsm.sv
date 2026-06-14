@@ -29,11 +29,12 @@ module arbiter_fsm (
 
     // FSM State Encoding
     typedef enum logic [2:0] {
-        ST_IDLE      = 3'b000,
-        ST_CPU_READ  = 3'b001,
-        ST_CPU_WRITE = 3'b010,
-        ST_DMA_READ  = 3'b011,
-        ST_DMA_WRITE = 3'b100
+        ST_IDLE             = 3'b000,
+        ST_CPU_READ         = 3'b001,
+        ST_CPU_WRITE        = 3'b010,
+        ST_DMA_READ         = 3'b011,
+        ST_DMA_READ_WRITE   = 3'b100,
+        WAIT_READ_WRITE     = 3'b101
     } state_t;
 
     state_t current_state, next_state;
@@ -56,8 +57,9 @@ module arbiter_fsm (
                 // Strict Priority Evaluation
                 if      (read_req)                      next_state = ST_CPU_READ;
                 else if (write_req)                     next_state = ST_CPU_WRITE;
+                else if (start_read_i && start_write_i) next_state = ST_DMA_READ_WRITE;
                 else if (start_read_i || desc_fetch_i)  next_state = ST_DMA_READ;
-                else if (start_write_i)                 next_state = ST_DMA_WRITE;
+                
             end
 
             ST_CPU_READ: begin
@@ -72,7 +74,10 @@ module arbiter_fsm (
                 if (d_read_done) next_state = ST_IDLE;
             end
 
-            ST_DMA_WRITE: begin
+            ST_DMA_READ_WRITE: begin
+                next_state = WAIT_READ_WRITE;
+            end
+            WAIT_READ_WRITE: begin
                 if (d_write_done) next_state = ST_IDLE;
             end
             
@@ -106,8 +111,14 @@ module arbiter_fsm (
                 rm_req    = 1'b1;
                 sel_dma_r = 1'b1;
             end
-            ST_DMA_WRITE: begin
+            ST_DMA_READ_WRITE: begin
+                rm_req    = 1'b1;
+                sel_dma_r = 1'b1;
                 wm_req    = 1'b1;
+                sel_dma_w = 1'b1;
+            end
+            WAIT_READ_WRITE: begin
+                sel_dma_r = 1'b1; // keep dma selected but pull wm and rm req low
                 sel_dma_w = 1'b1;
             end
             // ST_IDLE remains all 0s

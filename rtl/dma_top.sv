@@ -91,7 +91,7 @@ module dma_top #(
     */
     dma_interface.axi_master          dut_axi_if,
     // DMA DONE AND ERROR INTERRUPTS
-    output logic [N-1:0] done_itrpt_o,
+    output logic [N-1:0] done_intrpt_o,
     output logic [N-1:0] error_intrpt_o
 );
     // ==========================================
@@ -131,6 +131,7 @@ module dma_top #(
     logic [N-1:0]                 busy;
     logic [N-1:0]                 response_valid;
     logic [1:0]                   err_resp [0:N-1];
+    logic [N-1:0]                 clear_en;
 
     // ==========================================
     // Internal Wires: FSMs <-> Internal Arbiter 1x1
@@ -172,6 +173,9 @@ module dma_top #(
     logic                         int_desc_valid;
     logic                         int_read_master_idle;
     logic                         int_write_master_idle;
+    // debugging signal
+    assign dut_axi_if.rd_master_idle_o = axi_master_idle; 
+    assign dut_axi_if.wr_master_idle_o = axi_wr_master_idle;
 
     // ==========================================
     // Instantiation: DMA Register Config Top
@@ -207,7 +211,8 @@ module dma_top #(
         .resp_valid_i   (response_valid),
         .err_resp_o     (err_resp),
         .irq_o          (done_intrpt_o),
-        .err_irq_o      (error_intrpt_o)
+        .err_irq_o      (error_intrpt_o),
+        .clear_en_i     (clear_en)
     );
 
     // ==========================================
@@ -222,13 +227,14 @@ module dma_top #(
                 
                 // Reg Top Interface
                 .ch_en           (ch_en[i]          ),
-                .ch_abort        (ch_abort          ),
+                .ch_abort        (ch_abort[i]       ),
                 .desc_ptr        (desc_ptr[i]       ),
-                .error_response  (err_resp          ),
+                .error_response  (err_resp[i]       ),
                 .response_status (response_status[i]),
                 .ch_done         (ch_done[i]        ),
                 .busy            (busy[i]           ),
                 .response_valid  (response_valid[i] ),
+                .clear_en_o      (clear_en[i]       ),
                 
                 // Arbiter 1x1 Outputs (Requests from FSM)
                 .ch_req          (fsm_ch_req[i]),

@@ -7,6 +7,7 @@ module axi_master_wr_datapath (
     input logic [ADDR_W-1:0] dest_addr_i,
     input logic [23:0]       trans_len_i,
     input logic [DATA_W-1:0]  c_data_i,
+    input logic              write_start_i,
     // To Arbiter
     output logic            wr_error_o,
     // From controller
@@ -29,7 +30,7 @@ module axi_master_wr_datapath (
     input logic             rst_beat_flag_i,
     input logic             set_beat_flag_i,
     input logic             set_wr_error_i,
-    input logic             rst_wr_error_i,
+    //input logic             rst_wr_error_i,
     input logic             latch_remain_burst_done_flag_i,
     input logic             ld_cpu_data_i,
     input logic             sel_cpu_data_i,
@@ -75,10 +76,10 @@ logic             wr_error_r;
 logic [23:0]                         total_beats;
 logic [$clog2(MAX_ALLOWED_BURSTS):0] no_bursts;
 logic [$clog2(MAX_ALLOWED_BURSTS):0] no_bursts_selected;
-logic [$clog2(MAX_BEATS)-1:0]        no_beats;
-logic [$clog2(MAX_BEATS)-1:0]        remaining_beats;
-logic [$clog2(MAX_BEATS)-1:0]        beat_cntr_data_i;
-logic [$clog2(MAX_BEATS)-1:0]        no_beats_r;
+logic [$clog2(MAX_BEATS):0]        no_beats;
+logic [$clog2(MAX_BEATS):0]        remaining_beats;
+logic [$clog2(MAX_BEATS):0]        beat_cntr_data_i;
+logic [$clog2(MAX_BEATS):0]        no_beats_r;
 //-------------- MUX TO SELECT BETWEEN DESTINATION ADDRESS AND NEXT BURST ADDRESS -------------
 always_comb begin : DEST_VS_NXT_BURST_ADDR
     if (nxt_addr_sel_i) selected_addr = dest_addr_nxt_burst;
@@ -164,17 +165,17 @@ end
 //------- MUX to select between no_beats and remaining_beats for ar_len_o and BEAT COUNTER---
 always_comb begin 
     if (!beat_sel_i) begin
-        beat_cntr_data_i = (no_beats - 1);
+        beat_cntr_data_i = (no_beats);
     end
     else begin
-        beat_cntr_data_i = (remaining_beats - 1);
+        beat_cntr_data_i = (remaining_beats);
     end
 end
 //------------------------------------------------------------
 //------------------ BEATS REG -----------------------
 always_ff @(posedge clk or negedge rst_n) begin : BEATS_REG
     if (!rst_n) no_beats_r <= '0;
-    else if (ld_beats_reg_i) no_beats_r <= beat_cntr_data_i;
+    else if (ld_beats_reg_i) no_beats_r <= (beat_cntr_data_i - 1);
     
 end
 //------------------------------------------------------------
@@ -289,7 +290,7 @@ end
 //------------------ WR ERROR FLAG REG --------------------
 always_ff @(posedge clk or negedge rst_n) begin
     if (!rst_n)               wr_error_r <= 0;
-    else if (!rst_wr_error_i) wr_error_r <= 0; // Clear the error flag at the beginning of a new transfer
+    else if (write_start_i)   wr_error_r <= 0; // Clear the error flag at the beginning of a new transfer
     else if (set_wr_error_i)  wr_error_r <= 1; 
     
 end

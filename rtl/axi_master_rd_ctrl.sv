@@ -305,14 +305,17 @@ always_comb begin
         if (err_i) begin
             route_zeros_o = 1;
         end
+        if (beat_done_i) begin
+            burst_count_en_o = 1;
+            beat_count_en_o = 0;
+            fifo_wr_en_o    = 0;
+        end
         if (fifo_full_i) begin
             r_ready_o =       0;
             beat_count_en_o = 0;
             fifo_wr_en_o    = 0;
         end
-        if (beat_done_i) begin
-            burst_count_en_o = 1;
-        end
+        
         if (!r_valid_i) begin
             beat_count_en_o = 0;
             fifo_wr_en_o    = 0;
