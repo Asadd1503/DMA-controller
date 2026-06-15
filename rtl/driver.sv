@@ -37,8 +37,10 @@ class driver;
         // DATA READ
         gen2drv.get(data_trans);
         data_trans.display("DRIVER");
-        data_from_memory = new[1];
-        data_from_memory[0] = data_trans.data[0];
+        data_from_memory = new[257];
+        for (int i = 0; i < 257; i++) begin
+            data_from_memory[i] = data_trans.data[i];
+        end
         // DATA READ
         axi_master_read(data_from_memory.size());
         //wait(rd_master_idle);
@@ -56,8 +58,9 @@ class driver;
             write_axi_lite(32'h14, 32'h10, 4'b1111, lite_trans.bresp); // wriiting okay response
         end
         else begin
-            $display("[ %0t ] DMA ENCOuNTERED ERR0R", $time);
+            $display("[ %0t ] DMA ENCOUNTERED ERR0R", $time);
         end
+    
 
 
     
@@ -110,7 +113,17 @@ class driver;
     endtask : write_axi_lite
 
     task axi_master_read(input int num_beats);
+        int burst_2_en;
+        int no_burst_2;
+        
         // ADDRESS PHASE
+        if (num_beats > 256) begin
+            no_burst_2 = num_beats - 256;
+            num_beats = 256;
+            burst_2_en = 1;
+            
+        end
+        $display("num_beats = %0d, no_burst_2 = %0d", num_beats, no_burst_2);
         wait(drv_axi_slave_if.ar_valid_o);
         drv_axi_slave_if.ar_ready_i = 1'b1;
         @(posedge drv_axi_slave_if.aclk);
@@ -125,11 +138,37 @@ class driver;
         end
         @(posedge drv_axi_slave_if.aclk);
         drv_axi_slave_if.r_valid_i = 1'b0;
+        if (burst_2_en) begin
+            wait(drv_axi_slave_if.ar_valid_o);
+            drv_axi_slave_if.ar_ready_i = 1'b1;
+            @(posedge drv_axi_slave_if.aclk);
+            drv_axi_slave_if.ar_ready_i = 1'b0;
+
+            for(int i=0; i<no_burst_2; i++) begin
+                drv_axi_slave_if.r_valid_i = 1'b1;
+                drv_axi_slave_if.r_data_i = data_from_memory[255 + i + 1]; // desc_payload (src_addr, dest_addr, len_and_flag, nxt_desc)
+                wait(drv_axi_slave_if.r_ready_o);
+                @(posedge drv_axi_slave_if.aclk);
+
+            end
+            @(posedge drv_axi_slave_if.aclk);
+            drv_axi_slave_if.r_valid_i = 1'b0;
+        end
     endtask : axi_master_read
 
     task axi_master_write(
         input int num_beats
     );
+    int burst_2_en;
+    int no_burst_2;
+    // ADDRESS PHASE
+    if (num_beats > 256) begin
+        no_burst_2 = num_beats - 256;
+        num_beats = 256;
+        burst_2_en = 1;
+        
+    end
+
     wait(drv_axi_slave_if.aw_valid_o);
     drv_axi_slave_if.aw_ready_i = 1'b1;
     @(posedge drv_axi_slave_if.aclk);
@@ -146,6 +185,25 @@ class driver;
     drv_axi_slave_if.b_valid_i = 1'b1;
     drv_axi_slave_if.b_resp_i = 2'b00; // OKAY
     @(posedge drv_axi_slave_if.aclk);
+
+    if (burst_2_en) begin
+        wait(drv_axi_slave_if.aw_valid_o);
+        drv_axi_slave_if.aw_ready_i = 1'b1;
+        @(posedge drv_axi_slave_if.aclk);
+        drv_axi_slave_if.aw_ready_i = 1'b0;
+        for(int i=0; i<no_burst_2; i++) begin
+            wait(drv_axi_slave_if.w_valid_o);
+            drv_axi_slave_if.w_ready_i = 1'b1;
+            @(posedge drv_axi_slave_if.aclk);
+        end
+        @(posedge drv_axi_slave_if.aclk);
+        drv_axi_slave_if.w_ready_i = 1'b0;
+        // send response
+        wait(drv_axi_slave_if.b_ready_o);
+        drv_axi_slave_if.b_valid_i = 1'b1;
+        drv_axi_slave_if.b_resp_i = 2'b00; // OKAY
+        @(posedge drv_axi_slave_if.aclk);
+    end
 
     endtask : axi_master_write
 endclass
