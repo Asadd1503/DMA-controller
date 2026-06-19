@@ -38,6 +38,7 @@ module dma_fsm (
     logic [31 :0] len_and_flag_reg;
     logic [1  :0] response_reg;
     logic         response_valid_reg;
+    logic         desc_fetch_done;
 
     typedef enum logic [2 : 0] {
         IDLE,
@@ -71,9 +72,11 @@ module dma_fsm (
                 IDLE: begin
                     ch_abort_reg    <= '0; 
                     response_reg    <= '0; 
+                    desc_fetch_done <= 1'b0;
                 end
                 REQUEST: begin
-                    nxt_desc_reg <= desc_ptr;
+                    if (!desc_fetch_done) nxt_desc_reg <= desc_ptr;
+                    else                  nxt_desc_reg <= nxt_desc_reg;
                 end
                 FETCH_DESC: begin
                     if (ch_abort) ch_abort_reg <= 1'b1;
@@ -91,6 +94,7 @@ module dma_fsm (
                     
 
                     response_reg     <= 2'b00; 
+                    desc_fetch_done  <= 1'b1;
                 end
                 START_TRANSACTION: begin
                     if (read_error)  response_reg[0] <= 1'b1;

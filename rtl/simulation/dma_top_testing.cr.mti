@@ -1,17 +1,17 @@
-C:/dma_top/dma_top/rtl/rtl/axi_master_wr_ctrl.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi_master_wr_ctrl.sv
+C:/dma_top/dma_top/rtl/rtl/axi4_lite_if.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi4_lite_if.sv
+QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
+-- Compiling interface axi4_lite_if
+
+Top level modules:
+	--none--
+
+} {} {}} C:/dma_top/dma_top/rtl/rtl/axi_master_wr_ctrl.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi_master_wr_ctrl.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
 -- Compiling package axi_master_wr_ctrl_sv_unit
 -- Compiling module axi_master_wr_ctrl
 
 Top level modules:
 	axi_master_wr_ctrl
-
-} {} {}} C:/dma_top/dma_top/rtl/rtl/axi4_lite_if.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi4_lite_if.sv
-QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
--- Compiling interface axi4_lite_if
-
-Top level modules:
-	--none--
 
 } {} {}} C:/dma_top/dma_top/rtl/rtl/rr_scheduler.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/rr_scheduler.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
@@ -31,16 +31,16 @@ QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
 Top level modules:
 	ch_req_mux
 
-} {} {}} C:/dma_top/dma_top/rtl/rtl/master_intf_bridge.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/master_intf_bridge.sv
+} {} {}} C:/dma_top/dma_top/rtl/rtl/resp_demux.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/resp_demux.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
--- Compiling module master_intf_bridge
+-- Compiling module resp_demux
 
 Top level modules:
-	master_intf_bridge
+	resp_demux
 
-} {} {}} C:/dma_top/dma_top/rtl/rtl/axi_lite_transaction.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi_lite_transaction.sv
+} {} {}} C:/dma_top/dma_top/rtl/rtl/driver.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/driver.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
--- Compiling package axi_lite_transaction_sv_unit
+-- Compiling package driver_sv_unit
 
 Top level modules:
 	--none--
@@ -52,18 +52,18 @@ QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
 Top level modules:
 	dma_top
 
-} {} {}} C:/dma_top/dma_top/rtl/rtl/driver.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/driver.sv
+} {} {}} C:/dma_top/dma_top/rtl/rtl/axi_lite_transaction.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/axi_lite_transaction.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
--- Compiling package driver_sv_unit
+-- Compiling package axi_lite_transaction_sv_unit
 
 Top level modules:
 	--none--
 
-} {} {}} C:/dma_top/dma_top/rtl/rtl/resp_demux.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/resp_demux.sv
+} {} {}} C:/dma_top/dma_top/rtl/rtl/master_intf_bridge.sv {1 {vlog -work work -vopt -sv -stats=none C:/dma_top/dma_top/rtl/rtl/master_intf_bridge.sv
 QuestaSim-64 vlog 2024.1 Compiler 2024.02 Feb  1 2024
--- Compiling module resp_demux
+-- Compiling module master_intf_bridge
 
 Top level modules:
-	resp_demux
+	master_intf_bridge
 
 } {} {}}

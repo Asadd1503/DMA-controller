@@ -1,4 +1,13 @@
 BEGIN 3:dma_interface:fast__1:work
+    wready :  1:dma_pkg:fast:work
+    r_valid_i :  1:dma_pkg:fast:work
+    aclk :  1:dma_pkg:fast:work
+    wr_master_idle_o :  1:dma_pkg:fast:work
+    arready :  1:dma_pkg:fast:work
+    bready :  1:dma_pkg:fast:work
+    r_data_i :  1:dma_pkg:fast:work
+    rready :  1:dma_pkg:fast:work
+    bvalid :  1:dma_pkg:fast:work
     r_ready_o :  1:dma_pkg:fast:work
     rvalid :  1:dma_pkg:fast:work
     bresp :  1:dma_pkg:fast:work
@@ -22,28 +31,8 @@ BEGIN 3:dma_interface:fast__1:work
     reset_done :  1:dma_pkg:fast:work
     rd_master_idle_o :  1:dma_pkg:fast:work
     arvalid :  1:dma_pkg:fast:work
-    wready :  1:dma_pkg:fast:work
-    r_valid_i :  1:dma_pkg:fast:work
-    aclk :  1:dma_pkg:fast:work
-    wr_master_idle_o :  1:dma_pkg:fast:work
-    arready :  1:dma_pkg:fast:work
-    bready :  1:dma_pkg:fast:work
-    r_data_i :  1:dma_pkg:fast:work
-    rready :  1:dma_pkg:fast:work
-    bvalid :  1:dma_pkg:fast:work
 END 
 BEGIN 3:dma_interface:fast__2:work
-    aw_valid_o :  1:dma_top:fast:work
-    cpu_c_write_done :  1:dma_top:fast:work
-    bvalid :  1:dma_top:fast:work
-    aw_addr_o :  1:dma_top:fast:work
-    c_read_error_o :  1:dma_top:fast:work
-    bready :  1:dma_top:fast:work
-    aw_len_o :  1:dma_top:fast:work
-    c_write_error_o :  1:dma_top:fast:work
-    araddr :  1:dma_top:fast:work
-    aw_size_o :  1:dma_top:fast:work
-    cpu_read_data :  1:dma_top:fast:work
     arvalid :  1:dma_top:fast:work
     aw_burst_o :  1:dma_top:fast:work
     ar_ready_i :  1:dma_top:fast:work
@@ -87,8 +76,24 @@ BEGIN 3:dma_interface:fast__2:work
     aw_ready_i :  1:dma_top:fast:work
     cpu_c_read_done :  1:dma_top:fast:work
     bresp :  1:dma_top:fast:work
+    aw_valid_o :  1:dma_top:fast:work
+    cpu_c_write_done :  1:dma_top:fast:work
+    bvalid :  1:dma_top:fast:work
+    aw_addr_o :  1:dma_top:fast:work
+    c_read_error_o :  1:dma_top:fast:work
+    bready :  1:dma_top:fast:work
+    aw_len_o :  1:dma_top:fast:work
+    c_write_error_o :  1:dma_top:fast:work
+    araddr :  1:dma_top:fast:work
+    aw_size_o :  1:dma_top:fast:work
+    cpu_read_data :  1:dma_top:fast:work
 END 
 BEGIN 3:axi4_lite_if:fast__1:work
+    aclk :  1:axi4_lite_slave:fast:work
+    bvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    bready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    rdata :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
+    wstrb :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
     rst_n :  1:axi4_lite_slave:fast:work
     bresp :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
     arready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
@@ -103,9 +108,4 @@ BEGIN 3:axi4_lite_if:fast__1:work
     wvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
     rresp :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
     wdata :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
-    aclk :  1:axi4_lite_slave:fast:work
-    bvalid :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
-    bready :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
-    rdata :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
-    wstrb :  1:dma_reg_top:fast:work 1:axi4_lite_slave:fast:work
 END 

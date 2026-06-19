@@ -60,9 +60,42 @@ class driver;
         else begin
             $display("[ %0t ] DMA ENCOUNTERED ERR0R", $time);
         end
-    
+        //----- 2nd descriptor transaction-----
+        gen2drv.get(desc_trans);
+        desc_trans.display("DRIVER");
+        data_from_memory = new[4];
+        data_from_memory[0] = desc_trans.src_addr;
+        data_from_memory[1] = desc_trans.dest_addr;
+        data_from_memory[2] = desc_trans.len_and_flag;
+        data_from_memory[3] = desc_trans.nxt_desc;
+        // DESCRIPTOR RAED
+        axi_master_read(data_from_memory.size());
 
+        //gen2drv.get(data_trans);
+        data_trans.display("DRIVER");
+        data_from_memory = new[257];
+        for (int i = 0; i < 257; i++) begin
+            data_from_memory[i] = data_trans.data[i];
+        end
+        // DATA READ
+        axi_master_read(data_from_memory.size());
 
+        wait(drv_axi_slave_if.rd_master_idle_o);
+        //$display("[ %0t ] rd_master_idle_o = %0d", $time, drv_axi_slave_if.rd_master_idle_o);
+        // DATA WRITE
+        axi_master_write(data_from_memory.size());
+        $display("[ %0t ] wr_master_idle_o = %0d", $time, drv_axi_slave_if.wr_master_idle_o);
+        wait(drv_axi_slave_if.wr_master_idle_o);   // error response has been wriiten to status reg,-> now reading error status.
+
+        read_axi_lite(lite_trans.addr, lite_trans.rdata);
+        if(lite_trans.rdata[1:0] == 2'b00) begin
+        
+            write_axi_lite(32'h14, 32'h10, 4'b1111, lite_trans.bresp); // wriiting okay response
+            $display("[ %0t ] Writting response to DMA", $time);
+        end
+        else begin
+            $display("[ %0t ] DMA ENCOUNTERED ERR0R", $time);
+        end
     
 
 

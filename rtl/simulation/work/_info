@@ -65,6 +65,10 @@ R0
 R1
 R0
 R1
+R0
+R1
+R0
+R1
 !s11f MIXED_VERSIONS
 13
 !s112 1.1
@@ -75,10 +79,10 @@ cModel Technology
 Z2 dC:/dma_top/dma_top/rtl/rtl/simulation
 T_opt
 !s11d dma_pkg C:/dma_top/dma_top/rtl/rtl/simulation/work 1 dma_interface 1 C:/dma_top/dma_top/rtl/rtl/simulation/work 
-!s110 1781522561
-VP<KMz6PeRDHD651E^IZje3
+!s110 1781884170
+V?3V[d;EV?e2A6A;1gWfzL0
 04 6 4 work tb_top fast 0
-=1-0871900f07da-6a2fe080-362-35e8
+=1-0871900f07da-6a356509-372-8a8
 R1
 !s12f OEM100
 !s12b OEM100
@@ -90,7 +94,7 @@ OL;O;2024.1;79
 varbiter_controller
 Z4 2../defs.sv|../dma_pkg.sv|../axi4_lite_if.sv|../axi4_lite_slave.sv|../register_file.sv|../dma_reg_top.sv|../dma_fsm.sv|../arbiter_controller.sv|../ch_req_mux.sv|../resp_demux.sv|../master_intf_bridge.sv|../rr_scheduler.sv|../internal_dma_arbiter_top.sv|../arbiter_datapath.sv|../arbiter_fsm.sv|../arbiter_top.sv|../sync_fifo.sv|../beat_counter.sv|../burst_counter.sv|../desc_counter.sv|../sample_reg.sv|../axi_master_rd_datapath.sv|../axi_master_rd_ctrl.sv|../axi_master_wr_datapath.sv|../axi_master_wr_ctrl.sv|../axi_master_rd_top.sv|../axi_master_wr_top.sv|../axi_master_top.sv|../dma_interface.sv|../axi_lite_transaction.sv|../dma_tb.sv|../dma_top.sv|../tb_top.sv
 Z5 DXx6 sv_std 3 std 0 22 9oUSJO;AeEaW`l:M@^WG92
-Z6 !s110 1781522560
+Z6 !s110 1781884169
 !i10b 1
 !s100 O0DoDga7Uo_DeR2clW_dX3
 I0;NR716ZC8k0_2bm2X;401
@@ -99,14 +103,14 @@ R2
 w1781363530
 Z7 8../arbiter_controller.sv
 Z8 F../arbiter_controller.sv
-!i122 55
+!i122 57
 L0 2 147
 Z9 VDg1SIo80bB@j0V0VzS_@n1
 Z10 OL;L;2024.1;79
 r1
 !s85 0
 31
-Z11 !s108 1781522560.000000
+Z11 !s108 1781884169.000000
 Z12 !s107 ../enviroment.sv|../driver.sv|../generator.sv|../data_transaction.sv|../desc_transaction.sv|../tb_top.sv|../dma_top.sv|../dma_tb.sv|../axi_lite_transaction.sv|../dma_interface.sv|../axi_master_top.sv|../axi_master_wr_top.sv|../axi_master_rd_top.sv|../axi_master_wr_ctrl.sv|../axi_master_wr_datapath.sv|../axi_master_rd_ctrl.sv|../axi_master_rd_datapath.sv|../sample_reg.sv|../desc_counter.sv|../burst_counter.sv|../beat_counter.sv|../sync_fifo.sv|../arbiter_top.sv|../arbiter_fsm.sv|../arbiter_datapath.sv|../internal_dma_arbiter_top.sv|../rr_scheduler.sv|../master_intf_bridge.sv|../resp_demux.sv|../ch_req_mux.sv|../arbiter_controller.sv|../dma_fsm.sv|../dma_reg_top.sv|../register_file.sv|../axi4_lite_slave.sv|../axi4_lite_if.sv|../dma_pkg.sv|../defs.sv|
 Z13 !s90 -reportprogress|300|-work|work|-sv|-f|flist.f|
 !i113 0
@@ -124,7 +128,7 @@ R2
 w1781264690
 Z15 8../arbiter_datapath.sv
 Z16 F../arbiter_datapath.sv
-!i122 55
+!i122 57
 L0 3 132
 R9
 R10
@@ -149,7 +153,7 @@ R2
 w1781357306
 Z17 8../arbiter_fsm.sv
 Z18 F../arbiter_fsm.sv
-!i122 55
+!i122 57
 L0 3 126
 R9
 R10
@@ -174,7 +178,7 @@ R2
 w1781264707
 Z19 8../arbiter_top.sv
 Z20 F../arbiter_top.sv
-!i122 55
+!i122 57
 L0 3 191
 R9
 R10
@@ -199,7 +203,7 @@ R2
 w1781264766
 Z21 8../axi4_lite_if.sv
 Z22 F../axi4_lite_if.sv
-!i122 55
+!i122 57
 Z23 L0 2 0
 R9
 R10
@@ -224,7 +228,7 @@ R2
 w1781264786
 Z24 8../axi4_lite_slave.sv
 Z25 F../axi4_lite_slave.sv
-!i122 55
+!i122 57
 L0 2 220
 R9
 R10
@@ -253,7 +257,7 @@ R2
 w1781264713
 Z26 8../axi_lite_transaction.sv
 Z27 F../axi_lite_transaction.sv
-!i122 55
+!i122 57
 L0 6 0
 R10
 31
@@ -275,7 +279,7 @@ R2
 w1781361485
 Z28 8../axi_master_rd_ctrl.sv
 Z29 F../axi_master_rd_ctrl.sv
-!i122 55
+!i122 57
 L0 3 403
 R9
 R10
@@ -306,7 +310,7 @@ R2
 Z31 w1781361568
 Z32 8../axi_master_rd_datapath.sv
 Z33 F../axi_master_rd_datapath.sv
-!i122 55
+!i122 57
 L0 4 287
 R10
 31
@@ -333,7 +337,7 @@ R2
 R31
 R32
 R33
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -361,7 +365,7 @@ R2
 Z34 w1781264733
 Z35 8../axi_master_rd_top.sv
 Z36 F../axi_master_rd_top.sv
-!i122 55
+!i122 57
 L0 3 189
 R10
 31
@@ -388,7 +392,7 @@ R2
 R34
 R35
 R36
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -416,7 +420,7 @@ R2
 Z37 w1781264739
 Z38 8../axi_master_top.sv
 Z39 F../axi_master_top.sv
-!i122 55
+!i122 57
 L0 4 157
 R10
 31
@@ -443,7 +447,7 @@ R2
 R37
 R38
 R39
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -465,7 +469,7 @@ R2
 w1781362608
 Z40 8../axi_master_wr_ctrl.sv
 Z41 F../axi_master_wr_ctrl.sv
-!i122 55
+!i122 57
 L0 3 402
 R9
 R10
@@ -496,7 +500,7 @@ R2
 Z42 w1781362711
 Z43 8../axi_master_wr_datapath.sv
 Z44 F../axi_master_wr_datapath.sv
-!i122 55
+!i122 57
 L0 3 316
 R10
 31
@@ -523,7 +527,7 @@ R2
 R42
 R43
 R44
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -551,7 +555,7 @@ R2
 Z45 w1781366312
 Z46 8../axi_master_wr_top.sv
 Z47 F../axi_master_wr_top.sv
-!i122 55
+!i122 57
 L0 3 186
 R10
 31
@@ -578,7 +582,7 @@ R2
 R45
 R46
 R47
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -600,7 +604,7 @@ R2
 w1781361335
 Z48 8../beat_counter.sv
 Z49 F../beat_counter.sv
-!i122 55
+!i122 57
 Z50 L0 3 37
 R9
 R10
@@ -631,7 +635,7 @@ R2
 Z51 w1781264797
 Z52 8../burst_counter.sv
 Z53 F../burst_counter.sv
-!i122 55
+!i122 57
 R50
 R10
 31
@@ -658,7 +662,7 @@ R2
 R51
 R52
 R53
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -680,7 +684,7 @@ R2
 w1781264804
 Z54 8../ch_req_mux.sv
 Z55 F../ch_req_mux.sv
-!i122 55
+!i122 57
 L0 2 48
 R9
 R10
@@ -705,7 +709,7 @@ R2
 w1781361396
 Z56 8../defs.sv
 Z57 F../defs.sv
-!i122 55
+!i122 57
 Z58 L0 1 0
 V2U]:UVf[hc6:VUg::[7hg2
 R10
@@ -828,7 +832,7 @@ R2
 Z89 w1781264822
 R77
 R78
-!i122 55
+!i122 57
 L0 3 23
 R10
 31
@@ -855,7 +859,7 @@ R2
 R89
 R77
 R78
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -870,15 +874,15 @@ R4
 R5
 R6
 !i10b 1
-!s100 Z@giBRAJ]S[fV:QG4hA7[1
-Il;e@X^@SFnEe0Ek@IIiGP2
+!s100 f<iXgFjU`D2V6Sed4CCb01
+I?9AbkFKE]Q8`F0nAWe9hZ1
 S1
 R2
-w1781374747
+w1781883600
 R65
 R66
-!i122 55
-L0 2 210
+!i122 57
+L0 2 214
 R9
 R10
 r1
@@ -902,7 +906,7 @@ R2
 w1781363581
 R81
 R82
-!i122 55
+!i122 57
 L0 13 0
 R9
 R10
@@ -921,11 +925,11 @@ R4
 R5
 R6
 !i10b 1
-!s100 12P7Q8YmRQWV1BNSGO4AB3
-I1M_f6?^JDfI9BkbLLG5@j1
+!s100 hC7EQI63UCa[8>GcaRY2X0
+IBPa9=>EI@@b3@[O?WfNR20
 S1
 R2
-w1781522545
+w1781881970
 R59
 R60
 R27
@@ -934,9 +938,9 @@ F../data_transaction.sv
 F../generator.sv
 F../driver.sv
 F../enviroment.sv
-!i122 55
+!i122 57
 R58
-V1M_f6?^JDfI9BkbLLG5@j1
+VBPa9=>EI@@b3@[O?WfNR20
 R10
 r1
 !s85 0
@@ -959,7 +963,7 @@ R2
 w1781374523
 R63
 R64
-!i122 55
+!i122 57
 L0 2 150
 R9
 R10
@@ -975,7 +979,7 @@ R3
 vdma_tb
 R4
 R5
-Z90 DXx4 work 7 dma_pkg 0 22 1M_f6?^JDfI9BkbLLG5@j1
+Z90 DXx4 work 7 dma_pkg 0 22 BPa9=>EI@@b3@[O?WfNR20
 DXx4 work 14 dma_tb_sv_unit 0 22 M<Ec95m_Hm2coEEzM@3ch0
 R6
 R9
@@ -990,7 +994,7 @@ R2
 Z91 w1781359240
 R83
 R84
-!i122 55
+!i122 57
 L0 4 11
 R10
 31
@@ -1017,7 +1021,7 @@ R2
 R91
 R83
 R84
-!i122 55
+!i122 57
 L0 3 0
 R10
 31
@@ -1039,7 +1043,7 @@ R2
 w1781374966
 R85
 R86
-!i122 55
+!i122 57
 L0 3 440
 R9
 R10
@@ -1064,7 +1068,7 @@ R2
 w1781264895
 R73
 R74
-!i122 55
+!i122 57
 L0 2 109
 R9
 R10
@@ -1089,7 +1093,7 @@ R2
 w1781264900
 R69
 R70
-!i122 55
+!i122 57
 L0 2 49
 R9
 R10
@@ -1114,7 +1118,7 @@ R2
 w1781375169
 R61
 R62
-!i122 55
+!i122 57
 L0 2 195
 R9
 R10
@@ -1139,7 +1143,7 @@ R2
 w1781264912
 R67
 R68
-!i122 55
+!i122 57
 L0 2 65
 R9
 R10
@@ -1164,7 +1168,7 @@ R2
 w1781369536
 R71
 R72
-!i122 55
+!i122 57
 L0 2 57
 R9
 R10
@@ -1195,7 +1199,7 @@ R2
 Z92 w1781264924
 R79
 R80
-!i122 55
+!i122 57
 L0 3 18
 R10
 31
@@ -1222,7 +1226,7 @@ R2
 R92
 R79
 R80
-!i122 55
+!i122 57
 R23
 R10
 31
@@ -1244,7 +1248,7 @@ R2
 w1781264930
 R75
 R76
-!i122 55
+!i122 57
 L0 2 53
 R9
 R10
@@ -1269,7 +1273,7 @@ R2
 w1781359215
 R87
 R88
-!i122 55
+!i122 57
 L0 2 25
 R9
 R10

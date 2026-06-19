@@ -27,8 +27,8 @@ class generator;
         desc_trans = new();
         desc_trans.src_addr     = 32'h0000_0004;
         desc_trans.dest_addr    = 32'h0000_2000;
-        desc_trans.len_and_flag = 32'h0100_0404; // len=4 bytes, flag=1
-        desc_trans.nxt_desc     = 32'h0000_0000; // nxt_desc = 32'h0000_0000;
+        desc_trans.len_and_flag = 32'h0000_0404; // len=1028 bytes, flag=0
+        desc_trans.nxt_desc     = 32'h0000_2000; // nxt_desc = 32'h0000_0000;
         gen2drv.put(desc_trans);
         data_trans      = new();
         data_trans.data = new[257];
@@ -41,5 +41,27 @@ class generator;
         trans.is_write = 1'b0;
         trans.addr = 32'h14; // status_reg[0]
         gen2drv.put(trans);
+
+        // 2nd descriptor
+        desc_trans = new();
+        desc_trans.src_addr     = 32'h0000_0008;
+        desc_trans.dest_addr    = 32'h0000_4000;
+        desc_trans.len_and_flag = 32'h0100_0404; // len=1028 bytes, flag=1
+        desc_trans.nxt_desc     = 32'h0000_0000; // nxt_desc = 32'h0000_0000;
+        gen2drv.put(desc_trans);
+
+        //data_trans      = new();
+        //data_trans.data = new[257];
+        //for (int i = 0; i < 257; i++) begin
+        //    data_trans.data[i] = i;
+        //end
+        //gen2drv.put(data_trans);
+//
+        //// generating status read transaction
+        //trans = new();
+        //trans.is_write = 1'b0;
+        //trans.addr = 32'h14; // status_reg[0]
+        //gen2drv.put(trans);
+
     endtask
 endclass
